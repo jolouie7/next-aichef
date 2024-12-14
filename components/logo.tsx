@@ -6,8 +6,8 @@ export default function Logo() {
       <Image
         src="/aichef-logo.png"
         alt="AI Chef Logo"
-        width={400}
-        height={300}
+        width={100}
+        height={100}
       />
       <h1 className="text-4xl font-extrabold leading-none tracking-tight mb-16 text-zinc-900">
         AI Chef
