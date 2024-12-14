@@ -20,6 +20,7 @@ import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   mealtime: z.string(),
@@ -30,6 +31,7 @@ export default function CreateMealForm() {
   const [ingredients, setIngredients] = useState<string[]>([]);
 
   const { toast } = useToast();
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -56,6 +58,7 @@ export default function CreateMealForm() {
   };
 
   const onSubmit = () => {
+    // Theres no ingredients added or no mealtime selected
     if (ingredients.length === 0 || !form.getValues("mealtime")) {
       toast({
         title: "Error",
@@ -65,6 +68,7 @@ export default function CreateMealForm() {
       return;
     }
     console.log(ingredients);
+    router.push("/meal-result");
   };
 
   return (
