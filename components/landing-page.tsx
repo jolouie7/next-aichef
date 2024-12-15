@@ -4,10 +4,10 @@ import Logo from "./logo";
 
 export default function LandingPage() {
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
+    <div className="flex flex-col items-center justify-center h-[calc(100vh-64px)]">
       <Logo />
-      <Link href="/create-meal">
-        <Button>Start Cooking!</Button>
+      <Link href="/create-meal" className="mt-6">
+        <Button size="lg">Start Cooking!</Button>
       </Link>
     </div>
   );
