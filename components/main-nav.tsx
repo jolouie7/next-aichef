@@ -43,7 +43,10 @@ export function MainNav() {
           ))}
         </nav>
         <div className="flex items-center space-x-4">
+          {/* Desktop */}
           <Button className="hidden md:inline-flex">Sign up</Button>
+
+          {/* Mobile */}
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="md:hidden">
