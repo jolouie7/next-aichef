@@ -26,10 +26,10 @@ const routes = [
 export function MainNav() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-sm">
-      <div className="container flex h-16 items-center justify-between">
+      <div className="container flex h-16 items-center justify-between mx-auto px-4 md:px-0">
         <Link href="/" className="flex items-center space-x-2">
           <Mountain className="h-6 w-6" />
-          <span className="font-bold">Acme Inc</span>
+          <span className="font-bold">AI Chef</span>
         </Link>
         <nav className="hidden items-center space-x-6 md:flex">
           {routes.map((route) => (
