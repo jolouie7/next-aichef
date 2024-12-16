@@ -21,6 +21,8 @@ import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { useMealsContext } from "@/lib/meals-context";
+import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
   mealtime: z.string(),
@@ -29,9 +31,10 @@ const formSchema = z.object({
 
 export default function CreateMealForm() {
   const [ingredients, setIngredients] = useState<string[]>([]);
-
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
+  const { setMeals } = useMealsContext();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -57,7 +60,7 @@ export default function CreateMealForm() {
     setIngredients(ingredients.filter((i) => i !== ingredient));
   };
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     // Theres no ingredients added or no mealtime selected
     if (ingredients.length === 0 || !form.getValues("mealtime")) {
       toast({
@@ -68,7 +71,31 @@ export default function CreateMealForm() {
       return;
     }
     console.log(ingredients);
-    router.push("/meal-result");
+
+    try {
+      setIsLoading(true);
+      const res = await fetch("/api/completion", {
+        method: "POST",
+        body: JSON.stringify({
+          prompt: `Generate recipes for ${form.getValues("mealtime")} with ${ingredients.join(
+            ", "
+          )} ingredients.`,
+        }),
+      });
+      const data = await res.json();
+      console.log("In create meal form:", data);
+      setMeals(data.meals);
+      router.push("/meal-results");
+    } catch (error) {
+      console.error("Error generating meals:", error);
+      toast({
+        title: "Error",
+        description: "Failed to generate meals. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -148,7 +175,16 @@ export default function CreateMealForm() {
             </TableBody>
           </Table>
         </div>
-        <Button type="submit">Submit</Button>
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Generating meals...
+            </>
+          ) : (
+            "Submit"
+          )}
+        </Button>
       </form>
     </Form>
   );
