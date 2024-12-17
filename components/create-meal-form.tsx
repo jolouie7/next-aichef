@@ -86,6 +86,7 @@ export default function CreateMealForm() {
       console.log("In create meal form:", data);
       setMeals(data.meals);
       router.push("/meal-results");
+      setIsLoading(false);
     } catch (error) {
       console.error("Error generating meals:", error);
       toast({
@@ -93,7 +94,6 @@ export default function CreateMealForm() {
         description: "Failed to generate meals. Please try again.",
         variant: "destructive",
       });
-    } finally {
       setIsLoading(false);
     }
   };
