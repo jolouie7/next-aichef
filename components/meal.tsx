@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,12 +18,8 @@ interface MealResultProps {
 }
 
 export default function Meal({ meal }: MealResultProps) {
-  const [isPrinting, setIsPrinting] = useState(false);
-
   const handlePrint = () => {
-    setIsPrinting(true);
     window.print();
-    setIsPrinting(false);
   };
 
   return (
