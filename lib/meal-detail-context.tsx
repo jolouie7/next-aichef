@@ -5,7 +5,7 @@ import { createContext, useContext, useState, ReactNode } from "react";
 interface Meal {
   title: string;
   description: string;
-  // imageUrl: string;
+  imageUrl: string;
   ingredients: string[];
   instructions: string[];
 }
@@ -23,6 +23,7 @@ export const MealDetailProvider = ({ children }: { children: ReactNode }) => {
   const [meal, setMeal] = useState<Meal>({
     title: "",
     description: "",
+    imageUrl: "",
     ingredients: [],
     instructions: [],
   });
