@@ -1,8 +1,11 @@
 "use client";
 
 import MealOption from "@/components/meal-option";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useMealsContext } from "@/lib/meals-context";
-import { Suspense, useState } from "react";
+import { useMealDetailContext } from "@/lib/meal-detail-context";
+import MealCreationLoader from "@/components/meal-creation-loader";
 
 // const meals = [
 //   {
@@ -35,24 +38,51 @@ import { Suspense, useState } from "react";
 interface MealResult {
   title: string;
   description: string;
-  // imageUrl: string;
-  ingredients: string[];
-  instructions: string[];
 }
 
 export default function MealResultsPage() {
-  const { meals } = useMealsContext();
+  const [loading, setLoading] = useState(false);
+  const { meals } = useMealsContext(); // get meals from context
+  const router = useRouter();
+  const { setMeal } = useMealDetailContext(); // set chosen meal in context
 
   console.log("In MealResultsPage:", meals);
 
-  const handleClick = ({
-    title,
-    description,
-    ingredients,
-    instructions,
-  }: MealResult) => {
-    console.log({ title, description, ingredients, instructions });
+  const handleClick = async ({ title, description }: MealResult) => {
+    console.log({ title, description });
+
+    try {
+      setLoading(true);
+      // make api request to generate meal
+      const res = await fetch("/api/meal-detail", {
+        method: "POST",
+        body: JSON.stringify({
+          prompt: `Generate a recipe with the title: ${title} and description: ${description}.`,
+        }),
+      });
+      // have loading screen while waiting for response
+      // add res to meal context
+      const data = await res.json();
+      setMeal(data);
+
+      // Navigate first
+      await router.push("/meal-detail");
+
+      // Then set loading to false after navigation
+      setLoading(false);
+    } catch (error) {
+      console.error("Error generating meal:", error);
+      setLoading(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="container mx-auto mt-8 p-4">
+        <MealCreationLoader />
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto mt-8 p-4">
@@ -64,8 +94,6 @@ export default function MealResultsPage() {
               <MealOption
                 title={meal.title}
                 description={meal.description}
-                ingredients={meal.ingredients}
-                instructions={meal.instructions}
                 handleClick={handleClick}
               />
             </div>
