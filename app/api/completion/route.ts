@@ -8,7 +8,7 @@ export async function POST(req: Request) {
   const result = await generateObject({
     model: openai("gpt-4o-mini"),
     system:
-      "You will generate 5 different recipes consisting of a title, description, ingredients, and instructions.",
+      "You will generate 5 different recipes consisting of a title and description.",
     prompt,
     schema: z.object({
       meals: z.array(

@@ -5,9 +5,6 @@ import { createContext, useContext, useState, ReactNode } from "react";
 interface Meal {
   title: string;
   description: string;
-  // imageUrl: string;
-  ingredients: string[];
-  instructions: string[];
 }
 
 interface MealsContextType {
