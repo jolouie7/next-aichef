@@ -4,7 +4,7 @@ import Logo from "./logo";
 
 export default function LandingPage() {
   return (
-    <div className="flex flex-col items-center justify-center h-[calc(100vh-64px)]">
+    <div className="fixed inset-0 top-16 flex flex-col items-center justify-center bg-background">
       <Logo />
       <Link href="/create-meal" className="mt-6">
         <Button size="lg">Start Cooking!</Button>
