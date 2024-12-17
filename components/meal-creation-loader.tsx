@@ -1,10 +1,12 @@
+"use client";
+
 import React from "react";
-import { Spinner } from "./ui/spinner";
-import Logo from "./logo";
+import Logo from "@/components/logo";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function MealCreationLoader() {
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
+    <div className="fixed inset-0 top-16 flex flex-col items-center justify-center bg-background">
       <Logo />
       <Spinner size={64} />
     </div>
