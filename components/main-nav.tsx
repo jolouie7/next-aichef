@@ -6,8 +6,8 @@ import { Menu } from "lucide-react";
 
 const routes = [
   {
-    href: "/features",
-    label: "Features",
+    href: "/create-meal",
+    label: "Create Meal",
   },
   {
     href: "/pricing",
