@@ -7,34 +7,6 @@ import { useMealsContext } from "@/lib/meals-context";
 import { useMealDetailContext } from "@/lib/meal-detail-context";
 import MealCreationLoader from "@/components/meal-creation-loader";
 
-// const meals = [
-//   {
-//     title: "Grilled Salmon with Asparagus",
-//     description:
-//       "Tender salmon fillet served with crisp asparagus spears and lemon butter sauce.",
-//   },
-//   {
-//     title: "Vegetarian Stir-Fry",
-//     description:
-//       "A colorful medley of fresh vegetables stir-fried in a savory garlic-ginger sauce.",
-//   },
-//   {
-//     title: "Chicken Fajita Bowl",
-//     description:
-//       "Spicy grilled chicken strips with bell peppers and onions, served over cilantro-lime rice.",
-//   },
-//   {
-//     title: "Mediterranean Quinoa Salad",
-//     description:
-//       "Protein-packed quinoa tossed with cucumber, tomatoes, feta, and a zesty lemon dressing.",
-//   },
-//   {
-//     title: "Beef and Mushroom Stroganoff",
-//     description:
-//       "Tender beef strips and mushrooms in a creamy sauce, served over egg noodles.",
-//   },
-// ];
-
 interface MealResult {
   title: string;
   description: string;
@@ -46,8 +18,6 @@ export default function MealResultsPage() {
   const router = useRouter();
   const { setMeal } = useMealDetailContext(); // set chosen meal in context
 
-  console.log("In MealResultsPage:", meals);
-
   const handleClick = async ({ title, description }: MealResult) => {
     console.log({ title, description });
 
@@ -57,18 +27,17 @@ export default function MealResultsPage() {
       const res = await fetch("/api/meal-detail", {
         method: "POST",
         body: JSON.stringify({
-          prompt: `Generate a recipe with the title: ${title} and description: ${description}.`,
+          prompt: `Generate a meal with title: ${title} and description: ${description}.`,
         }),
       });
-      // have loading screen while waiting for response
-      // add res to meal context
       const data = await res.json();
+
       setMeal(data);
 
-      // Navigate first
-      await router.push("/meal-detail");
+      // Use replace instead of push to prevent adding to history
+      // This should prevent the flash of content
+      router.replace("/meal-detail");
 
-      // Then set loading to false after navigation
       setLoading(false);
     } catch (error) {
       console.error("Error generating meal:", error);
