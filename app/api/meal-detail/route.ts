@@ -5,8 +5,6 @@ import {
 import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
 
-// TODO? Can i add a option to add an image to the recipe
-
 export async function POST(req: Request) {
   const { prompt }: { prompt: string } = await req.json();
 
@@ -32,7 +30,6 @@ export async function POST(req: Request) {
 
   const recipeData = result.object;
   const { image } = imageResponse;
-  console.log("here in meal detail route:", { recipeData, image });
 
   return Response.json({
     ...recipeData,

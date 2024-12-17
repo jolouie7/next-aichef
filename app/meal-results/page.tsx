@@ -19,8 +19,6 @@ export default function MealResultsPage() {
   const { setMeal } = useMealDetailContext(); // set chosen meal in context
 
   const handleClick = async ({ title, description }: MealResult) => {
-    console.log({ title, description });
-
     try {
       setLoading(true);
       // make api request to generate meal
