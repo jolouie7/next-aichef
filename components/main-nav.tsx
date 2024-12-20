@@ -1,8 +1,12 @@
+"use client";
+
 import Link from "next/link";
+import { useSession, signIn, signOut } from "next-auth/react";
 import { Mountain } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const routes = [
   {
@@ -24,6 +28,17 @@ const routes = [
 ];
 
 export function MainNav() {
+  const { data: session } = useSession();
+  const router = useRouter();
+
+  const handleSignup = () => {
+    router.push("/signup");
+  };
+
+  const handleSignin = () => {
+    router.push("/signin");
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-sm">
       <div className="container flex h-16 items-center justify-between mx-auto px-4 md:px-0">
@@ -44,7 +59,22 @@ export function MainNav() {
         </nav>
         <div className="flex items-center space-x-4">
           {/* Desktop */}
-          <Button className="hidden md:inline-flex">Sign up</Button>
+          {session ? (
+            <button onClick={() => signOut()}>Sign Out</button>
+          ) : (
+            <>
+              <Button
+                className="hidden md:inline-flex"
+                variant="outline"
+                onClick={handleSignin}
+              >
+                Sign in
+              </Button>
+              <Button className="hidden md:inline-flex" onClick={handleSignup}>
+                Sign up
+              </Button>
+            </>
+          )}
 
           {/* Mobile */}
           <Sheet>
@@ -65,7 +95,22 @@ export function MainNav() {
                     {route.label}
                   </Link>
                 ))}
-                <Button className="w-full">Sign up</Button>
+                {session ? (
+                  <button onClick={() => signOut()}>Sign Out</button>
+                ) : (
+                  <>
+                    <Button
+                      className="w-full"
+                      variant="outline"
+                      onClick={handleSignin}
+                    >
+                      Sign in
+                    </Button>
+                    <Button className="w-full" onClick={handleSignup}>
+                      Sign up
+                    </Button>
+                  </>
+                )}
               </nav>
             </SheetContent>
           </Sheet>
