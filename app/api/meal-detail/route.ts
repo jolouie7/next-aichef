@@ -28,11 +28,11 @@ export async function POST(req: Request) {
     }),
   ]);
 
-  const recipeData = result.object;
+  const mealData = result.object;
   const { image } = imageResponse;
 
   return Response.json({
-    ...recipeData,
+    ...mealData,
     imageUrl: `data:image/png;base64,${image.base64}`,
   });
 }
