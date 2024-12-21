@@ -5,7 +5,7 @@ import { useSession, signIn, signOut } from "next-auth/react";
 import { Mountain } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu } from "lucide-react";
+import { Menu, LoaderCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const routes = [
@@ -28,8 +28,8 @@ const routes = [
 ];
 
 export function MainNav() {
-  const { data: session } = useSession();
   const router = useRouter();
+  const { data: session, status } = useSession();
 
   const handleSignup = () => {
     router.push("/signup");
@@ -38,6 +38,15 @@ export function MainNav() {
   const handleSignin = () => {
     router.push("/signin");
   };
+
+  if (status === "loading") {
+    return (
+      <>
+        <LoaderCircle className="animate-spin" />
+        <div>Loading...</div>
+      </>
+    );
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-sm">
@@ -60,7 +69,10 @@ export function MainNav() {
         <div className="flex items-center space-x-4">
           {/* Desktop */}
           {session ? (
-            <button onClick={() => signOut()}>Sign Out</button>
+            <div className="flex items-center space-x-4">
+              <p>Welcome, {session.user?.email}!</p>
+              <Button onClick={() => signOut()}>Sign Out</Button>
+            </div>
           ) : (
             <>
               <Button
@@ -96,7 +108,10 @@ export function MainNav() {
                   </Link>
                 ))}
                 {session ? (
-                  <button onClick={() => signOut()}>Sign Out</button>
+                  <div className="flex items-center space-x-4">
+                    <p>Welcome, {session.user?.email}!</p>
+                    <Button onClick={() => signOut()}>Sign Out</Button>
+                  </div>
                 ) : (
                   <>
                     <Button
