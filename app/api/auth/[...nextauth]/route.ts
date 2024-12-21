@@ -8,8 +8,12 @@ import { prisma } from "@/lib/prisma";
 
 export const authOptions: AuthOptions = {
   adapter: PrismaAdapter(prisma),
+  secret: process.env.NEXTAUTH_SECRET,
   session: {
-    strategy: "jwt" as const,
+    strategy: "jwt",
+  },
+  pages: {
+    signIn: "/signin",
   },
   providers: [
     CredentialsProvider({
@@ -18,11 +22,9 @@ export const authOptions: AuthOptions = {
         email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(
-        credentials: { email: string; password: string } | undefined
-      ) {
+      async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          return null;
+          throw new Error("Invalid credentials");
         }
 
         const user = await prisma.user.findUnique({
@@ -33,10 +35,13 @@ export const authOptions: AuthOptions = {
           !user ||
           !(await bcrypt.compare(credentials.password, user.password))
         ) {
-          return null;
+          throw new Error("Invalid credentials");
         }
 
-        return user;
+        return {
+          id: user.id,
+          email: user.email,
+        };
       },
     }),
     // GoogleProvider({
@@ -48,12 +53,14 @@ export const authOptions: AuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.email = user.email;
       }
       return token;
     },
-    async session({ session, token, user }) {
-      if (user) {
+    async session({ session, token }) {
+      if (token) {
         session.user.id = JSON.stringify(token.id);
+        session.user.email = JSON.stringify(token.email);
       }
       return session;
     },
