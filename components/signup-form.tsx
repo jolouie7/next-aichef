@@ -53,13 +53,8 @@ export function SignupForm({
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-
-    const formData = new FormData();
-    formData.append("email", values.email);
-    formData.append("password", values.password);
-
     try {
-      const response = await signup(formData);
+      const response = await signup(values);
 
       if (response.error) {
         toast({
@@ -71,28 +66,19 @@ export function SignupForm({
         return;
       }
 
-      const result = await signIn("credentials", {
+      await signIn("credentials", {
         email: values.email,
         password: values.password,
-        redirect: false,
+        callbackUrl: "/create-meal",
+        redirect: true,
       });
 
-      if (result?.error) {
-        toast({
-          title: "Error",
-          description: result.error,
-          variant: "destructive",
-        });
-        setIsLoading(false);
-        return;
-      }
-
-      router.push("/create-meal");
       setIsLoading(false);
     } catch (error) {
+      console.error("Signup Error:", error);
       toast({
         title: "Error",
-        description: "Something went wrong. Please try again.",
+        description: "Something went wrong during signup. Please try again.",
         variant: "destructive",
       });
       setIsLoading(false);

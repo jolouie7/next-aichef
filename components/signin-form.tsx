@@ -17,9 +17,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { LoaderCircle } from "lucide-react";
-import { signin } from "@/app/actions/auth";
+// import { signin } from "@/app/actions/auth";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { signIn } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -34,6 +36,8 @@ export function SigninForm({
 
   const { toast } = useToast();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/create-meal";
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -44,31 +48,25 @@ export function SigninForm({
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
     setIsLoading(true);
-    const formData = new FormData();
-    formData.append("email", values.email);
-    formData.append("password", values.password);
     try {
-      const response = await signin(formData);
-      if (response.error) {
-        toast({
-          title: "Error",
-          description: response.error,
-          variant: "destructive",
-        });
-        return;
-      }
-
-      toast({
-        title: "Success",
-        description: "Account signed in successfully!",
+      const result = await signIn("credentials", {
+        email: values.email,
+        password: values.password,
+        callbackUrl: callbackUrl,
+        redirect: true,
       });
 
-      router.push("/create-meal");
+      if (result?.error) {
+        toast({
+          title: "Error",
+          description: result.error,
+          variant: "destructive",
+        });
+      }
       setIsLoading(false);
     } catch (error) {
-      console.error(error);
+      console.error("SignIn Error:", error);
       toast({
         title: "Error",
         description: "Something went wrong during signin. Please try again.",
