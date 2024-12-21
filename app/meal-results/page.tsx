@@ -33,9 +33,7 @@ export default function MealResultsPage() {
 
       setMeal(data);
 
-      // Use replace instead of push to prevent adding to history
-      // This should prevent the flash of content
-      router.replace("/meal-detail");
+      router.push("/meal-detail");
 
       setLoading(false);
     } catch (error) {
