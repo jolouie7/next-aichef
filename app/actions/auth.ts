@@ -9,10 +9,10 @@ const signupSchema = z.object({
   password: z.string().min(8),
 });
 
-export async function signup(formData: FormData) {
+export async function signup(values: z.infer<typeof signupSchema>) {
   const validatedFields = signupSchema.safeParse({
-    email: formData.get("email"),
-    password: formData.get("password"),
+    email: values.email,
+    password: values.password,
   });
 
   if (!validatedFields.success) {
@@ -54,32 +54,6 @@ export async function signup(formData: FormData) {
     console.error("Error during signup:", error);
     return {
       error: "Something went wrong during sign up. Please try again.",
-    };
-  }
-}
-
-export async function signin(formData: FormData) {
-  try {
-    const user = await prisma.user.findUnique({
-      where: { email: formData.get("email") as string },
-    });
-
-    const isPasswordValid = await bcrypt.compare(
-      formData.get("password") as string,
-      user?.password || ""
-    );
-
-    if (!user || !isPasswordValid) {
-      return {
-        error: "Invalid credentials. Please check your email and password.",
-      };
-    }
-
-    return { success: true, message: "User signed in successfully" };
-  } catch (error) {
-    console.error("Error during signin:", error);
-    return {
-      error: "Something went wrong during sign in. Please try again.",
     };
   }
 }
