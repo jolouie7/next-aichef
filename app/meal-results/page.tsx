@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useMealsContext } from "@/lib/meals-context";
 import { useMealDetailContext } from "@/lib/meal-detail-context";
 import MealCreationLoader from "@/components/meal-creation-loader";
+import { ProtectedRoute } from "@/components/auth/protected-route";
 
 interface MealResult {
   title: string;
@@ -52,23 +53,25 @@ export default function MealResultsPage() {
   }
 
   return (
-    <div className="container mx-auto mt-8 p-4">
-      <h1 className="text-3xl font-bold mb-6">Pick a Meal</h1>
-      <div className="flex flex-col gap-4">
-        {meals.length > 0 ? (
-          meals.map((meal: MealResult, idx: number) => (
-            <div key={idx} className="w-full">
-              <MealOption
-                title={meal.title}
-                description={meal.description}
-                handleClick={handleClick}
-              />
-            </div>
-          ))
-        ) : (
-          <p>No meals available. Please create a meal first.</p>
-        )}
+    <ProtectedRoute>
+      <div className="container mx-auto mt-8 p-4">
+        <h1 className="text-3xl font-bold mb-6">Pick a Meal</h1>
+        <div className="flex flex-col gap-4">
+          {meals.length > 0 ? (
+            meals.map((meal: MealResult, idx: number) => (
+              <div key={idx} className="w-full">
+                <MealOption
+                  title={meal.title}
+                  description={meal.description}
+                  handleClick={handleClick}
+                />
+              </div>
+            ))
+          ) : (
+            <p>No meals available. Please create a meal first.</p>
+          )}
+        </div>
       </div>
-    </div>
+    </ProtectedRoute>
   );
 }
