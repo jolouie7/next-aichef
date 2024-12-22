@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signup } from "@/app/actions/auth";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
@@ -39,6 +39,11 @@ export function SignupForm({
 }: React.ComponentPropsWithoutRef<"div">) {
   const [isLoading, setIsLoading] = useState(false);
 
+  const { toast } = useToast();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/create-meal";
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -47,9 +52,6 @@ export function SignupForm({
       confirmPassword: "",
     },
   });
-
-  const router = useRouter();
-  const { toast } = useToast();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
@@ -66,12 +68,23 @@ export function SignupForm({
         return;
       }
 
-      await signIn("credentials", {
+      const result = await signIn("credentials", {
         email: values.email,
         password: values.password,
-        callbackUrl: "/create-meal",
-        redirect: true,
+        redirect: false,
       });
+
+      if (result?.error) {
+        toast({
+          title: "Error",
+          description: result.error,
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      router.push(callbackUrl);
     } catch (error) {
       console.error("Signup Error:", error);
       toast({
