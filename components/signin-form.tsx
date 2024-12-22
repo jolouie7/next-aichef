@@ -50,21 +50,12 @@ export function SigninForm({
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     try {
-      const result = await signIn("credentials", {
+      await signIn("credentials", {
         email: values.email,
         password: values.password,
         callbackUrl: callbackUrl,
         redirect: true,
       });
-
-      if (result?.error) {
-        toast({
-          title: "Error",
-          description: result.error,
-          variant: "destructive",
-        });
-      }
-      setIsLoading(false);
     } catch (error) {
       console.error("SignIn Error:", error);
       toast({

@@ -72,8 +72,6 @@ export function SignupForm({
         callbackUrl: "/create-meal",
         redirect: true,
       });
-
-      setIsLoading(false);
     } catch (error) {
       console.error("Signup Error:", error);
       toast({
