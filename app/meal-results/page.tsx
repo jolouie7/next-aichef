@@ -7,6 +7,9 @@ import { useMealsContext } from "@/lib/meals-context";
 import { useMealDetailContext } from "@/lib/meal-detail-context";
 import MealCreationLoader from "@/components/meal-creation-loader";
 import { ProtectedRoute } from "@/components/auth/protected-route";
+import { createMeal } from "../actions/meal";
+import { useSession } from "next-auth/react";
+import { toast } from "@/hooks/use-toast";
 
 interface MealResult {
   title: string;
@@ -15,14 +18,25 @@ interface MealResult {
 
 export default function MealResultsPage() {
   const [loading, setLoading] = useState(false);
-  const { meals } = useMealsContext(); // get meals from context
+
+  const { meals } = useMealsContext();
   const router = useRouter();
-  const { setMeal } = useMealDetailContext(); // set chosen meal in context
+  const { setMeal } = useMealDetailContext();
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
 
   const handleClick = async ({ title, description }: MealResult) => {
     try {
       setLoading(true);
-      // make api request to generate meal
+      if (!userId) {
+        toast({
+          title: "Error",
+          description: "You must be logged in to save meals",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const res = await fetch("/api/meal-detail", {
         method: "POST",
         body: JSON.stringify({
@@ -33,11 +47,23 @@ export default function MealResultsPage() {
 
       setMeal(data);
 
-      router.push("/meal-detail");
+      await createMeal({
+        name: data.title,
+        description: data.description,
+        mealPicture: data.mealPicture,
+        userId: userId.replace(/"/g, ""), // remove quotes from userId
+        ingredients: data.ingredients,
+        instructions: data.instructions,
+      });
 
-      setLoading(false);
+      router.push("/meal-detail");
     } catch (error) {
-      console.error("Error generating meal:", error);
+      console.error("Error creating meal:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save meal",
+        variant: "destructive",
+      });
       setLoading(false);
     }
   };
