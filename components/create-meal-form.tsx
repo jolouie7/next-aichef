@@ -74,7 +74,7 @@ export default function CreateMealForm() {
 
     try {
       setIsLoading(true);
-      const res = await fetch("/api/completion", {
+      const res = await fetch("/api/meal-results", {
         method: "POST",
         body: JSON.stringify({
           prompt: `Generate recipes for ${form.getValues("mealtime")} with ${ingredients.join(
@@ -86,7 +86,6 @@ export default function CreateMealForm() {
       console.log("In create meal form:", data);
       setMeals(data.meals);
       router.push("/meal-results");
-      setIsLoading(false);
     } catch (error) {
       console.error("Error generating meals:", error);
       toast({
