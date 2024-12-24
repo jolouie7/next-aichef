@@ -59,8 +59,8 @@ export const authOptions: AuthOptions = {
     },
     async session({ session, token }) {
       if (token) {
-        session.user.id = JSON.stringify(token.id);
-        session.user.email = JSON.stringify(token.email);
+        session.user.id = token.id as string;
+        session.user.email = token.email as string;
       }
       return session;
     },
