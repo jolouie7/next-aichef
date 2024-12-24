@@ -13,8 +13,8 @@ const routes = [
     label: "Create Meal",
   },
   {
-    href: "/pricing",
-    label: "Pricing",
+    href: "/my-meals",
+    label: "My Meals",
   },
   {
     href: "/about",
