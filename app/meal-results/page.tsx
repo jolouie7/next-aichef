@@ -46,7 +46,6 @@ export default function MealResultsPage() {
       const data = await res.json();
 
       setMeal(data);
-
       await createMeal({
         name: data.title,
         description: data.description,
