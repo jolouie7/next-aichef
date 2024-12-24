@@ -8,7 +8,7 @@ import { Printer } from "lucide-react";
 interface MealResult {
   title: string;
   description: string;
-  imageUrl: string;
+  mealPicture: string;
   ingredients: string[];
   instructions: string[];
 }
@@ -39,7 +39,7 @@ export default function Meal({ meal }: MealResultProps) {
         <CardContent>
           <div className="mb-6 overflow-hidden rounded-lg max-w-md mx-auto">
             <Image
-              src={meal.imageUrl}
+              src={meal.mealPicture}
               alt={meal.title}
               width={400}
               height={300}

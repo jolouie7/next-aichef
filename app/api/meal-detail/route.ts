@@ -33,6 +33,6 @@ export async function POST(req: Request) {
 
   return Response.json({
     ...mealData,
-    imageUrl: `data:image/png;base64,${image.base64}`,
+    mealPicture: `data:image/png;base64,${image.base64}`,
   });
 }
