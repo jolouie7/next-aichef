@@ -1,8 +1,15 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Trash2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+
+import { Combobox } from "./combobox";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -14,15 +21,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Combobox } from "./combobox";
-import { useState } from "react";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
-import { Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useRouter } from "next/navigation";
 import { useMealsContext } from "@/lib/meals-context";
-import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
   mealtime: z.string(),
@@ -78,7 +80,7 @@ export default function CreateMealForm() {
         method: "POST",
         body: JSON.stringify({
           prompt: `Generate recipes for ${form.getValues("mealtime")} with ${ingredients.join(
-            ", "
+            ", ",
           )} ingredients.`,
         }),
       });

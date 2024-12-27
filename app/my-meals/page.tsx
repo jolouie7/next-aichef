@@ -1,14 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { ProtectedRoute } from "@/components/auth/protected-route";
-import { getAllMeals } from "../actions/meal";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+
+import { getAllMeals } from "../actions/meal";
+
+import { ProtectedRoute } from "@/components/auth/protected-route";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
 //TODO: figure out a way to cache meals and only update when user adds or deletes a meal
+//TODO: break off the meal card into its own component
 
 interface Meal {
   id: string;

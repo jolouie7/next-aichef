@@ -1,9 +1,10 @@
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import bcrypt from "bcrypt";
 import { type AuthOptions } from "next-auth";
 import NextAuth from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
-import bcrypt from "bcrypt";
-import { PrismaAdapter } from "@auth/prisma-adapter";
+import GoogleProvider from "next-auth/providers/google";
+
 import { prisma } from "@/lib/prisma";
 
 export const authOptions: AuthOptions = {
