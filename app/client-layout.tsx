@@ -1,9 +1,10 @@
 "use client";
 
 import { SessionProvider } from "next-auth/react";
-import { MealsProvider } from "@/lib/meals-context";
-import { MealDetailProvider } from "@/lib/meal-detail-context";
+
 import { MainNav } from "@/components/main-nav";
+import { MealDetailProvider } from "@/lib/meal-detail-context";
+import { MealsProvider } from "@/lib/meals-context";
 
 const ClientLayout = ({ children }: { children: React.ReactNode }) => {
   return (

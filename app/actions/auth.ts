@@ -1,8 +1,9 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
 import { z } from "zod";
+
+import { prisma } from "@/lib/prisma";
 
 const signupSchema = z.object({
   email: z.string().email(),

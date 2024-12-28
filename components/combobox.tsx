@@ -1,9 +1,9 @@
 "use client";
 
 import * as React from "react";
+
 import { Check, ChevronsUpDown } from "lucide-react";
 
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -18,6 +18,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
 const mealtimes = [
   { value: "breakfast", label: "Breakfast" },
@@ -69,7 +70,7 @@ export function Combobox({
                   <Check
                     className={cn(
                       "ml-auto h-4 w-4",
-                      value === mealtime.value ? "opacity-100" : "opacity-0"
+                      value === mealtime.value ? "opacity-100" : "opacity-0",
                     )}
                   />
                 </CommandItem>

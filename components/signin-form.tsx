@@ -1,7 +1,17 @@
 "use client";
 
+import Link from "next/link";
+// import { signin } from "@/app/actions/auth";
+import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { cn } from "@/lib/utils";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { LoaderCircle } from "lucide-react";
+import { signIn } from "next-auth/react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,16 +22,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
-import { LoaderCircle } from "lucide-react";
-// import { signin } from "@/app/actions/auth";
-import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { signIn } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   email: z.string().email(),

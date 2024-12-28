@@ -1,6 +1,7 @@
-import { Button } from "./ui/button";
 import Link from "next/link";
+
 import Logo from "./logo";
+import { Button } from "./ui/button";
 
 export default function LandingPage() {
   return (

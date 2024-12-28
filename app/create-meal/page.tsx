@@ -1,5 +1,5 @@
-import CreateMealForm from "@/components/create-meal-form";
 import { ProtectedRoute } from "@/components/auth/protected-route";
+import CreateMealForm from "@/components/create-meal-form";
 
 export default function CreateMealPage() {
   return (

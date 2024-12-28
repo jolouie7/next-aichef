@@ -1,15 +1,18 @@
 "use client";
 
-import MealOption from "@/components/meal-option";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useMealsContext } from "@/lib/meals-context";
-import { useMealDetailContext } from "@/lib/meal-detail-context";
-import MealCreationLoader from "@/components/meal-creation-loader";
-import { ProtectedRoute } from "@/components/auth/protected-route";
-import { createMeal } from "../actions/meal";
+import { useState } from "react";
+
 import { useSession } from "next-auth/react";
+
+import { createMeal } from "../actions/meal";
+
+import { ProtectedRoute } from "@/components/auth/protected-route";
+import MealCreationLoader from "@/components/meal-creation-loader";
+import MealOption from "@/components/meal-option";
 import { toast } from "@/hooks/use-toast";
+import { useMealDetailContext } from "@/lib/meal-detail-context";
+import { useMealsContext } from "@/lib/meals-context";
 
 interface MealResult {
   title: string;

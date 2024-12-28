@@ -1,9 +1,10 @@
 "use client";
 
-import { useSession } from "next-auth/react";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
+
 import { LoaderCircle } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession();

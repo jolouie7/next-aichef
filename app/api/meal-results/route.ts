@@ -1,5 +1,5 @@
-import { generateObject } from "ai";
 import { openai } from "@ai-sdk/openai";
+import { generateObject } from "ai";
 import { z } from "zod";
 
 export async function POST(req: Request) {
@@ -15,7 +15,7 @@ export async function POST(req: Request) {
         z.object({
           title: z.string(),
           description: z.string(),
-        })
+        }),
       ),
     }),
   });

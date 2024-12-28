@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
 import { type NextRequest } from "next/server";
+
+import { getToken } from "next-auth/jwt";
 
 const protectedRoutes = ["/create-meal", "/meal-detail", "/meal-results"];
 

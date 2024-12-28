@@ -3,10 +3,9 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-import { Trash2 } from "lucide-react";
-import { Pencil } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 
-import { deleteMeal, getAllMeals } from "../actions/meal";
+import { getAllMeals } from "../actions/meal";
 
 import { ProtectedRoute } from "@/components/auth/protected-route";
 import Meal from "@/components/meal";

@@ -1,8 +1,8 @@
-import {
-  generateObject,
-  experimental_generateImage as generateImage,
-} from "ai";
 import { openai } from "@ai-sdk/openai";
+import {
+  experimental_generateImage as generateImage,
+  generateObject,
+} from "ai";
 import { z } from "zod";
 
 export async function POST(req: Request) {
