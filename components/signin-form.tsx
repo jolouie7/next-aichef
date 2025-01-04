@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 // import { signin } from "@/app/actions/auth";
-import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -101,6 +100,11 @@ export function SigninForm({
                     disabled={isLoading}
                     {...form.register("email")}
                   />
+                  {form.formState.errors.email && (
+                    <p className="text-red-500">
+                      {form.formState.errors.email.message}
+                    </p>
+                  )}
                 </div>
                 <div className="grid gap-2">
                   <div className="flex items-center">
@@ -120,6 +124,11 @@ export function SigninForm({
                     disabled={isLoading}
                     {...form.register("password")}
                   />
+                  {form.formState.errors.password && (
+                    <p className="text-red-500">
+                      {form.formState.errors.password.message}
+                    </p>
+                  )}
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? (

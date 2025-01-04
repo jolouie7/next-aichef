@@ -122,6 +122,11 @@ export function SignupForm({
                       disabled={isLoading}
                       {...form.register("email")}
                     />
+                    {form.formState.errors.email && (
+                      <p className="text-red-500">
+                        {form.formState.errors.email.message}
+                      </p>
+                    )}
                   </div>
                   <div className="grid gap-2">
                     <div className="flex items-center">
@@ -141,6 +146,11 @@ export function SignupForm({
                       disabled={isLoading}
                       {...form.register("password")}
                     />
+                    {form.formState.errors.password && (
+                      <p className="text-red-500">
+                        {form.formState.errors.password.message}
+                      </p>
+                    )}
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="confirmPassword">Confirm Password</Label>
@@ -152,6 +162,11 @@ export function SignupForm({
                       disabled={isLoading}
                       {...form.register("confirmPassword")}
                     />
+                    {form.formState.errors.confirmPassword && (
+                      <p className="text-red-500">
+                        {form.formState.errors.confirmPassword.message}
+                      </p>
+                    )}
                   </div>
                   <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? (
