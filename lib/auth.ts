@@ -1,6 +1,7 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcrypt";
-import NextAuth, { AuthOptions } from "next-auth";
+import { AuthOptions } from "next-auth";
+import { getServerSession } from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 import { prisma } from "./prisma";
@@ -62,10 +63,8 @@ export const authOptions: AuthOptions = {
   },
 };
 
-export const { handlers, auth, signIn, signOut } = NextAuth(authOptions);
-
 export async function getSession() {
-  return await auth();
+  return await getServerSession(authOptions);
 }
 
 // Check user on server side
