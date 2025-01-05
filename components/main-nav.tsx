@@ -50,7 +50,7 @@ export function MainNav() {
         {session ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Avatar className="cursor-pointer">
+              <Avatar className="cursor-pointer ml-4">
                 <AvatarImage src={session.user?.profilePicture || ""} />
                 <AvatarFallback>
                   {session.user?.email?.charAt(0)}
