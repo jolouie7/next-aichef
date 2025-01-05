@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 
-import { Mountain } from "lucide-react";
-import { Menu } from "lucide-react";
+import { Menu, Mountain } from "lucide-react";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -25,14 +24,6 @@ const routes = [
   {
     href: "/my-meals",
     label: "My Meals",
-  },
-  {
-    href: "/about",
-    label: "About",
-  },
-  {
-    href: "/contact",
-    label: "Contact",
   },
 ];
 
