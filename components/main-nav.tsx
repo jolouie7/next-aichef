@@ -36,7 +36,7 @@ export function MainNav() {
           <Mountain className="h-6 w-6" />
           <span className="text-lg font-semibold">AI Chef</span>
         </Link>
-        <div className="ml-auto hidden md:flex md:items-center md:gap-6">
+        <div className="ml-auto hidden md:flex md:items-center md:gap-6 mr-4">
           {routes.map((route) => (
             <Link
               key={route.href}
@@ -50,7 +50,7 @@ export function MainNav() {
         {session ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Avatar className="cursor-pointer ml-4">
+              <Avatar className="cursor-pointer">
                 <AvatarImage src={session.user?.profilePicture || ""} />
                 <AvatarFallback>
                   {session.user?.email?.charAt(0)}
