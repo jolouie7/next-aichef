@@ -1,5 +1,7 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
+
 import { prisma } from "@/lib/prisma";
 
 interface MealData {
@@ -12,7 +14,6 @@ interface MealData {
 }
 
 export async function createMeal(meal: MealData) {
-  console.log("meal in createMeal:", meal);
   try {
     const newMeal = await prisma.meal.create({
       data: {
@@ -56,6 +57,7 @@ export async function getAllMeals() {
         instructions: true,
       },
     });
+    revalidatePath("/my-meals");
     return { success: true, meals };
   } catch (error) {
     console.error("Error fetching meals:", error);
@@ -76,10 +78,16 @@ export async function getMealById(id: string) {
         instructions: true,
       },
     });
+
+    if (!meal) {
+      return { success: false, error: "Meal not found" };
+    }
+
+    revalidatePath(`/update-meal/${id}`);
     return { success: true, meal };
   } catch (error) {
-    console.error("Error fetching meal:", error);
-    return { success: false, meal: null };
+    console.error("Error getting meal:", error);
+    return { success: false, error: "Failed to get meal" };
   }
 }
 
@@ -102,7 +110,7 @@ export async function updateMeal(id: string, meal: MealData) {
           create: meal.ingredients.map((ingredient) => ({
             ingredient: {
               connectOrCreate: {
-                where: { id: ingredient.id },
+                where: { name: ingredient.name },
                 create: { name: ingredient.name },
               },
             },
@@ -115,9 +123,16 @@ export async function updateMeal(id: string, meal: MealData) {
           })),
         },
       },
+      include: {
+        ingredients: {
+          include: {
+            ingredient: true,
+          },
+        },
+        instructions: true,
+      },
     });
 
-    console.log("updatedMeal in updateMeal:", updatedMeal);
     return { success: true, meal: updatedMeal };
   } catch (error) {
     console.error("Error updating meal:", error);

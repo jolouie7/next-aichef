@@ -10,11 +10,7 @@ import { z } from "zod";
 
 import { Button } from "./ui/button";
 
-import {
-  deleteIngredient,
-  deleteInstruction,
-  updateMeal,
-} from "@/app/actions/meal";
+import { updateMeal } from "@/app/actions/meal";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -99,15 +95,15 @@ export default function UpdateMealForm({
 
   const handleDeleteIngredient = async (id: string) => {
     try {
-      const response = await deleteIngredient(id);
-      if (!response.success) {
-        toast({
-          title: "Error",
-          description: "Failed to delete ingredient",
-          variant: "destructive",
-        });
-        return;
-      }
+      // const response = await deleteIngredient(id);
+      // if (!response.success) {
+      //   toast({
+      //     title: "Error",
+      //     description: "Failed to delete ingredient",
+      //     variant: "destructive",
+      //   });
+      //   return;
+      // }
 
       const updatedIngredients = ingredients.filter(
         (ingredient) => ingredient.id !== id,
@@ -131,15 +127,15 @@ export default function UpdateMealForm({
 
   const handleDeleteInstruction = async (id: string) => {
     try {
-      const response = await deleteInstruction(id);
-      if (!response.success) {
-        toast({
-          title: "Error",
-          description: "Failed to delete instruction",
-          variant: "destructive",
-        });
-        return;
-      }
+      // const response = await deleteInstruction(id);
+      // if (!response.success) {
+      //   toast({
+      //     title: "Error",
+      //     description: "Failed to delete instruction",
+      //     variant: "destructive",
+      //   });
+      //   return;
+      // }
 
       const updatedInstructions = instructions.filter(
         (instruction) => instruction.id !== id,
@@ -161,8 +157,23 @@ export default function UpdateMealForm({
     }
   };
 
+  const handleAddIngredient = () => {
+    const newIngredient = { id: "", name: "" };
+    const updatedIngredients = [...ingredients, newIngredient];
+    setIngredients(updatedIngredients);
+    form.setValue("ingredients", updatedIngredients);
+  };
+
+  const handleAddInstruction = () => {
+    const newInstruction = { id: "", description: "" };
+    const updatedInstructions = [...instructions, newInstruction];
+    setInstructions(updatedInstructions);
+    form.setValue("instructions", updatedInstructions);
+  };
+
   const onSubmit = async () => {
     setIsLoading(true);
+    console.log("Submitting with ingredients:", ingredients);
 
     try {
       const response = await updateMeal(mealId, {
@@ -170,7 +181,7 @@ export default function UpdateMealForm({
         description,
         mealPicture,
         userId,
-        ingredients: ingredients,
+        ingredients,
         instructions,
       });
 
@@ -179,7 +190,10 @@ export default function UpdateMealForm({
           title: "Success",
           description: "Meal updated successfully",
         });
-        router.push("/my-meals");
+
+        // Force a hard refresh of the page to get new data
+        router.refresh();
+        router.push(`/my-meals`);
       } else {
         toast({
           title: "Error",
@@ -282,7 +296,7 @@ export default function UpdateMealForm({
                           placeholder={`Ingredient ${index + 1}`}
                         />
                         <AlertDialog>
-                          <AlertDialogTrigger>
+                          <AlertDialogTrigger asChild>
                             <Button
                               type="button"
                               variant="outline"
@@ -320,6 +334,14 @@ export default function UpdateMealForm({
                   )}
                 </div>
               </FormControl>
+              <Button
+                type="button"
+                variant="default"
+                onClick={handleAddIngredient}
+                className="mt-2 bg-green-500 hover:bg-green-600"
+              >
+                Add Ingredient
+              </Button>
               <FormMessage />
             </FormItem>
           )}
@@ -346,7 +368,7 @@ export default function UpdateMealForm({
                           onChange={(e) => {
                             const newInstructions = [...field.value];
                             newInstructions[index] = {
-                              id: newInstructions[index].id,
+                              id: instruction.id,
                               description: e.target.value,
                             };
                             onInstructionsChange(newInstructions);
@@ -354,7 +376,7 @@ export default function UpdateMealForm({
                           placeholder={`Instruction ${index + 1}`}
                         />
                         <AlertDialog>
-                          <AlertDialogTrigger>
+                          <AlertDialogTrigger asChild>
                             <Button
                               type="button"
                               variant="outline"
@@ -392,21 +414,28 @@ export default function UpdateMealForm({
                   )}
                 </div>
               </FormControl>
+              <Button
+                type="button"
+                variant="default"
+                onClick={handleAddInstruction}
+                className="mt-2 bg-green-500 hover:bg-green-600"
+              >
+                Add Instruction
+              </Button>
               <FormMessage />
             </FormItem>
           )}
         />
-        <div className="flex gap-2">
-          <Button type="submit" disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" /> Updating...
-              </>
-            ) : (
-              "Submit"
-            )}
-          </Button>
-        </div>
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Updating...
+            </>
+          ) : (
+            "Update Meal"
+          )}
+        </Button>
       </form>
     </Form>
   );
