@@ -1,11 +1,12 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { Pencil, Trash2 } from "lucide-react";
 
-import { getAllMeals } from "../actions/meal";
+import { deleteMeal, getAllMeals } from "../actions/meal";
 
 import { ProtectedRoute } from "@/components/auth/protected-route";
 import Meal from "@/components/meal";
@@ -32,8 +33,8 @@ import {
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 
-//TODO: figure out a way to cache meals and only update when user adds or deletes a meal
 //TODO: break off the meal card into its own component
+//TODO: add pagination
 
 interface MealData {
   id: string;
@@ -47,6 +48,7 @@ interface MealData {
 export default function MyMealsPage() {
   const [meals, setMeals] = useState<MealData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchMeals = async () => {
@@ -59,25 +61,16 @@ export default function MyMealsPage() {
     fetchMeals();
   }, []);
 
-  const handleViewMeal = async (mealId: string) => {
-    // TODO: open modal with meal details if loading then show skeleton or loader
-    const meal = meals.find((meal) => meal.id === mealId);
-    if (!meal) {
-      console.error("Meal not found");
-      return;
-    }
-    console.log("viewing meal with mealId:", mealId);
-  };
-
   const handleDeleteMeal = async (mealId: string) => {
-    // const response = await deleteMeal(mealId);
-    // if (response.success) {
-    //   setMeals(meals.filter((meal) => meal.id !== mealId));
-    // }
+    const response = await deleteMeal(mealId);
+    if (response.success) {
+      setMeals(meals.filter((meal) => meal.id !== mealId));
+    }
     console.log("deleting meal with mealId:", mealId);
   };
 
   const handleEditMeal = async (mealId: string) => {
+    router.push(`/update-meal/${mealId}`);
     console.log("editing meal with mealId:", mealId);
   };
 
@@ -122,8 +115,7 @@ export default function MyMealsPage() {
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                           This action cannot be undone. This will permanently
-                          delete your account and remove your data from our
-                          servers.
+                          delete your meal.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>

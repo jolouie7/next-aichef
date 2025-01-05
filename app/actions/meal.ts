@@ -11,7 +11,6 @@ interface MealData {
   instructions: string[];
 }
 
-// Add meal to db
 export async function createMeal(meal: MealData) {
   console.log("meal in createMeal:", meal);
   try {
@@ -45,7 +44,6 @@ export async function createMeal(meal: MealData) {
   }
 }
 
-// Get all meals from db
 export async function getAllMeals() {
   try {
     const meals = await prisma.meal.findMany({
@@ -65,7 +63,6 @@ export async function getAllMeals() {
   }
 }
 
-// Get meal details by id
 export async function getMealById(id: string) {
   try {
     const meal = await prisma.meal.findUnique({
@@ -86,7 +83,48 @@ export async function getMealById(id: string) {
   }
 }
 
-// Delete meal from db
+export async function updateMeal(id: string, meal: MealData) {
+  try {
+    await prisma.mealIngredient.deleteMany({
+      where: { mealId: id },
+    });
+    await prisma.instruction.deleteMany({
+      where: { mealId: id },
+    });
+
+    const updatedMeal = await prisma.meal.update({
+      where: { id },
+      data: {
+        name: meal.name,
+        description: meal.description,
+        mealPicture: meal.mealPicture,
+        ingredients: {
+          create: meal.ingredients.map((ingredient) => ({
+            ingredient: {
+              connectOrCreate: {
+                where: { name: ingredient },
+                create: { name: ingredient },
+              },
+            },
+          })),
+        },
+        instructions: {
+          create: meal.instructions.map((instruction) => ({
+            totalSteps: meal.instructions.length,
+            description: instruction,
+          })),
+        },
+      },
+    });
+
+    console.log("updatedMeal in updateMeal:", updatedMeal);
+    return { success: true, meal: updatedMeal };
+  } catch (error) {
+    console.error("Error updating meal:", error);
+    return { success: false, error: "Failed to update meal" };
+  }
+}
+
 export async function deleteMeal(id: string) {
   try {
     const deletedMeal = await prisma.meal.delete({
