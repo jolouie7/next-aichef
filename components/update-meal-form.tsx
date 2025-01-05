@@ -95,16 +95,6 @@ export default function UpdateMealForm({
 
   const handleDeleteIngredient = async (id: string) => {
     try {
-      // const response = await deleteIngredient(id);
-      // if (!response.success) {
-      //   toast({
-      //     title: "Error",
-      //     description: "Failed to delete ingredient",
-      //     variant: "destructive",
-      //   });
-      //   return;
-      // }
-
       const updatedIngredients = ingredients.filter(
         (ingredient) => ingredient.id !== id,
       );
@@ -127,16 +117,6 @@ export default function UpdateMealForm({
 
   const handleDeleteInstruction = async (id: string) => {
     try {
-      // const response = await deleteInstruction(id);
-      // if (!response.success) {
-      //   toast({
-      //     title: "Error",
-      //     description: "Failed to delete instruction",
-      //     variant: "destructive",
-      //   });
-      //   return;
-      // }
-
       const updatedInstructions = instructions.filter(
         (instruction) => instruction.id !== id,
       );
@@ -173,7 +153,6 @@ export default function UpdateMealForm({
 
   const onSubmit = async () => {
     setIsLoading(true);
-    console.log("Submitting with ingredients:", ingredients);
 
     try {
       const response = await updateMeal(mealId, {
@@ -185,29 +164,30 @@ export default function UpdateMealForm({
         instructions,
       });
 
-      if (response.success) {
-        toast({
-          title: "Success",
-          description: "Meal updated successfully",
-        });
-
-        // Force a hard refresh of the page to get new data
-        router.refresh();
-        router.push(`/my-meals`);
-      } else {
+      if (!response.success) {
         toast({
           title: "Error",
           description: response.error || "Failed to update meal",
           variant: "destructive",
         });
+        setIsLoading(false);
+        return;
       }
+
+      toast({
+        title: "Success",
+        description: "Meal updated successfully",
+      });
+
+      router.refresh();
+      router.push(`/my-meals`);
     } catch (error) {
+      console.error("Error updating meal:", error);
       toast({
         title: "Error",
         description: "Something went wrong",
         variant: "destructive",
       });
-    } finally {
       setIsLoading(false);
     }
   };

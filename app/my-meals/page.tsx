@@ -66,12 +66,10 @@ export default function MyMealsPage() {
     if (response.success) {
       setMeals(meals.filter((meal) => meal.id !== mealId));
     }
-    console.log("deleting meal with mealId:", mealId);
   };
 
   const handleEditMeal = async (mealId: string) => {
     router.push(`/update-meal/${mealId}`);
-    console.log("editing meal with mealId:", mealId);
   };
 
   return (

@@ -71,7 +71,6 @@ export default function CreateMealForm() {
       });
       return;
     }
-    console.log(ingredients);
 
     try {
       setIsLoading(true);
@@ -84,7 +83,7 @@ export default function CreateMealForm() {
         }),
       });
       const data = await res.json();
-      console.log("In create meal form:", data);
+
       setMeals(data.meals);
       router.push("/meal-results");
     } catch (error) {

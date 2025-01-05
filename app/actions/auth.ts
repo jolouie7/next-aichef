@@ -25,10 +25,7 @@ export async function signup(values: z.infer<typeof signupSchema>) {
 
   const { email, password } = validatedFields.data;
 
-  console.log("in auth server action:", email, password);
-
   try {
-    // Check if user already exists
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
@@ -39,11 +36,9 @@ export async function signup(values: z.infer<typeof signupSchema>) {
       };
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user
-    const user = await prisma.user.create({
+    await prisma.user.create({
       data: {
         email,
         password: hashedPassword,

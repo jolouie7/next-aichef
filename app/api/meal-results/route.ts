@@ -21,6 +21,5 @@ export async function POST(req: Request) {
   });
 
   const response = result.toJsonResponse();
-  console.log(response);
   return response;
 }
