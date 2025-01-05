@@ -4,13 +4,28 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { Loader2, Trash2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "./ui/button";
 
-import { updateMeal } from "@/app/actions/meal";
+import {
+  deleteIngredient,
+  deleteInstruction,
+  updateMeal,
+} from "@/app/actions/meal";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import {
   Form,
   FormControl,
@@ -29,8 +44,8 @@ interface UpdateMealFormProps {
     name: string;
     description: string;
     mealPicture: string;
-    ingredients: string[];
-    instructions: string[];
+    ingredients: { id: string; name: string }[];
+    instructions: { id: string; description: string }[];
   };
 }
 
@@ -38,8 +53,8 @@ const formSchema = z.object({
   name: z.string(),
   description: z.string(),
   mealPicture: z.string(),
-  ingredients: z.array(z.string()),
-  instructions: z.array(z.string()),
+  ingredients: z.array(z.object({ id: z.string(), name: z.string() })),
+  instructions: z.array(z.object({ id: z.string(), description: z.string() })),
 });
 
 export default function UpdateMealForm({
@@ -67,14 +82,83 @@ export default function UpdateMealForm({
     },
   });
 
-  const onIngredientsChange = (ingredients: string[]) => {
+  const onIngredientsChange = (ingredients: { id: string; name: string }[]) => {
     setIngredients(ingredients);
     form.setValue("ingredients", ingredients);
   };
 
-  const onInstructionsChange = (instructions: string[]) => {
+  const onInstructionsChange = (
+    instructions: {
+      id: string;
+      description: string;
+    }[],
+  ) => {
     setInstructions(instructions);
     form.setValue("instructions", instructions);
+  };
+
+  const handleDeleteIngredient = async (id: string) => {
+    try {
+      const response = await deleteIngredient(id);
+      if (!response.success) {
+        toast({
+          title: "Error",
+          description: "Failed to delete ingredient",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const updatedIngredients = ingredients.filter(
+        (ingredient) => ingredient.id !== id,
+      );
+      setIngredients(updatedIngredients);
+      form.setValue("ingredients", updatedIngredients);
+
+      toast({
+        title: "Success",
+        description: "Ingredient deleted successfully",
+      });
+    } catch (error) {
+      console.error("Error deleting ingredient:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete ingredient",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteInstruction = async (id: string) => {
+    try {
+      const response = await deleteInstruction(id);
+      if (!response.success) {
+        toast({
+          title: "Error",
+          description: "Failed to delete instruction",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const updatedInstructions = instructions.filter(
+        (instruction) => instruction.id !== id,
+      );
+      setInstructions(updatedInstructions);
+      form.setValue("instructions", updatedInstructions);
+
+      toast({
+        title: "Success",
+        description: "Instruction deleted successfully",
+      });
+    } catch (error) {
+      console.error("Error deleting instruction:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete instruction",
+        variant: "destructive",
+      });
+    }
   };
 
   const onSubmit = async () => {
@@ -86,7 +170,7 @@ export default function UpdateMealForm({
         description,
         mealPicture,
         userId,
-        ingredients,
+        ingredients: ingredients,
         instructions,
       });
 
@@ -176,18 +260,64 @@ export default function UpdateMealForm({
               <FormLabel>Ingredients:</FormLabel>
               <FormControl>
                 <div className="space-y-4">
-                  {field.value.map((ingredient: string, index: number) => (
-                    <Input
-                      key={index}
-                      value={ingredient}
-                      onChange={(e) => {
-                        const newIngredients = [...field.value];
-                        newIngredients[index] = e.target.value;
-                        onIngredientsChange(newIngredients);
-                      }}
-                      placeholder={`Ingredient ${index + 1}`}
-                    />
-                  ))}
+                  {field.value.map(
+                    (
+                      ingredient: { id: string; name: string },
+                      index: number,
+                    ) => (
+                      <div
+                        key={ingredient.id}
+                        className="flex items-center gap-2"
+                      >
+                        <Input
+                          value={ingredient.name}
+                          onChange={(e) => {
+                            const newIngredients = [...field.value];
+                            newIngredients[index] = {
+                              id: newIngredients[index].id,
+                              name: e.target.value,
+                            };
+                            onIngredientsChange(newIngredients);
+                          }}
+                          placeholder={`Ingredient ${index + 1}`}
+                        />
+                        <AlertDialog>
+                          <AlertDialogTrigger>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              className="hover:text-destructive"
+                              size="icon"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>
+                                Are you absolutely sure you want to delete this
+                                ingredient?
+                              </AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This action cannot be undone. This will
+                                permanently delete your ingredient.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() =>
+                                  handleDeleteIngredient(ingredient.id)
+                                }
+                              >
+                                Continue
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    ),
+                  )}
                 </div>
               </FormControl>
               <FormMessage />
@@ -202,18 +332,64 @@ export default function UpdateMealForm({
               <FormLabel>Instructions:</FormLabel>
               <FormControl>
                 <div className="space-y-4">
-                  {field.value.map((instruction: string, index: number) => (
-                    <Input
-                      key={index}
-                      value={instruction}
-                      onChange={(e) => {
-                        const newInstructions = [...field.value];
-                        newInstructions[index] = e.target.value;
-                        onInstructionsChange(newInstructions);
-                      }}
-                      placeholder={`Instruction ${index + 1}`}
-                    />
-                  ))}
+                  {field.value.map(
+                    (
+                      instruction: { id: string; description: string },
+                      index: number,
+                    ) => (
+                      <div
+                        key={instruction.id}
+                        className="flex items-center gap-2"
+                      >
+                        <Input
+                          value={instruction.description}
+                          onChange={(e) => {
+                            const newInstructions = [...field.value];
+                            newInstructions[index] = {
+                              id: newInstructions[index].id,
+                              description: e.target.value,
+                            };
+                            onInstructionsChange(newInstructions);
+                          }}
+                          placeholder={`Instruction ${index + 1}`}
+                        />
+                        <AlertDialog>
+                          <AlertDialogTrigger>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              className="hover:text-destructive"
+                              size="icon"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>
+                                Are you absolutely sure you want to delete this
+                                instruction?
+                              </AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This action cannot be undone. This will
+                                permanently delete your instruction.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() =>
+                                  handleDeleteInstruction(instruction.id)
+                                }
+                              >
+                                Continue
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    ),
+                  )}
                 </div>
               </FormControl>
               <FormMessage />

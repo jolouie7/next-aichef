@@ -35,8 +35,14 @@ export default async function UpdateMealPage({
           name: meal.name,
           description: meal.description,
           mealPicture: meal.mealPicture || "",
-          ingredients: meal.ingredients.map((i) => i.ingredient.name),
-          instructions: meal.instructions.map((i) => i.description),
+          ingredients: meal.ingredients.map((ingredient) => ({
+            id: ingredient.ingredientId,
+            name: ingredient.ingredient.name,
+          })),
+          instructions: meal.instructions.map((instruction) => ({
+            id: instruction.id,
+            description: instruction.description,
+          })),
         }}
       />
     </div>

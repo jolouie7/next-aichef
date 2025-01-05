@@ -7,8 +7,8 @@ interface MealData {
   description: string;
   mealPicture: string;
   userId: string;
-  ingredients: string[];
-  instructions: string[];
+  ingredients: { id: string; name: string }[];
+  instructions: { id: string; description: string }[];
 }
 
 export async function createMeal(meal: MealData) {
@@ -24,7 +24,7 @@ export async function createMeal(meal: MealData) {
           create: meal.ingredients.map((ingredient) => ({
             ingredient: {
               create: {
-                name: ingredient,
+                name: ingredient.name,
               },
             },
           })),
@@ -32,7 +32,7 @@ export async function createMeal(meal: MealData) {
         instructions: {
           create: meal.instructions.map((instruction) => ({
             totalSteps: meal.instructions.length,
-            description: instruction,
+            description: instruction.description,
           })),
         },
       },
@@ -102,8 +102,8 @@ export async function updateMeal(id: string, meal: MealData) {
           create: meal.ingredients.map((ingredient) => ({
             ingredient: {
               connectOrCreate: {
-                where: { name: ingredient },
-                create: { name: ingredient },
+                where: { id: ingredient.id },
+                create: { name: ingredient.name },
               },
             },
           })),
@@ -111,7 +111,7 @@ export async function updateMeal(id: string, meal: MealData) {
         instructions: {
           create: meal.instructions.map((instruction) => ({
             totalSteps: meal.instructions.length,
-            description: instruction,
+            description: instruction.description,
           })),
         },
       },
@@ -134,5 +134,37 @@ export async function deleteMeal(id: string) {
   } catch (error) {
     console.error("Error deleting meal:", error);
     return { success: false, error: "Failed to delete meal" };
+  }
+}
+
+export async function deleteIngredient(id: string) {
+  try {
+    // Delete all MealIngredient records that reference this ingredient
+    await prisma.mealIngredient.deleteMany({
+      where: {
+        ingredientId: id,
+      },
+    });
+
+    const deletedIngredient = await prisma.ingredient.delete({
+      where: { id },
+    });
+
+    return { success: true, deletedIngredient };
+  } catch (error) {
+    console.error("Error deleting ingredient:", error);
+    return { success: false, error: "Failed to delete ingredient" };
+  }
+}
+
+export async function deleteInstruction(id: string) {
+  try {
+    const deletedInstruction = await prisma.instruction.delete({
+      where: { id },
+    });
+    return { success: true, deletedInstruction };
+  } catch (error) {
+    console.error("Error deleting instruction:", error);
+    return { success: false, error: "Failed to delete instruction" };
   }
 }

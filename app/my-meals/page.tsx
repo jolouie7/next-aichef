@@ -111,7 +111,7 @@ export default function MyMealsPage() {
                     <AlertDialogContent>
                       <AlertDialogHeader>
                         <AlertDialogTitle>
-                          Are you absolutely sure?
+                          Are you absolutely sure you want to delete this meal?
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                           This action cannot be undone. This will permanently
