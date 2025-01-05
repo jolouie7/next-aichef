@@ -296,7 +296,7 @@ export default function UpdateMealForm({
                               }
                               className="bg-red-500 hover:bg-red-600"
                             >
-                              Continue
+                              Delete
                             </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
@@ -367,7 +367,7 @@ export default function UpdateMealForm({
                               }
                               className="bg-red-500 hover:bg-red-600"
                             >
-                              Continue
+                              Delete
                             </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
