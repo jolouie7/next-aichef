@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoaderCircle } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -48,36 +48,39 @@ export function SigninForm({
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     try {
-      const result = await signIn("credentials", {
+      const response = await signIn("credentials", {
         email: values.email,
         password: values.password,
         redirect: false,
       });
 
-      if (result?.error) {
+      if (response?.error) {
         toast({
           title: "Error",
-          description: result.error,
+          description: "Invalid email or password",
           variant: "destructive",
         });
         setIsLoading(false);
         return;
       }
 
+      router.refresh();
       router.push(callbackUrl);
     } catch (error) {
-      console.error("SignIn Error:", error);
+      console.error("Sign in error:", error);
       toast({
         title: "Error",
         description: "Something went wrong during signin. Please try again.",
         variant: "destructive",
       });
       setIsLoading(false);
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -87,7 +90,7 @@ export function SigninForm({
           <CardDescription>Sign in with your Google account</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <div className="grid gap-6">
               <div className="grid gap-6">
                 <div className="grid gap-2">
@@ -133,8 +136,8 @@ export function SigninForm({
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? (
                     <>
-                      <LoaderCircle className="h-4 w-4 animate-spin" />
-                      <span className="ml-2">Signing in...</span>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Signing in...
                     </>
                   ) : (
                     "Sign in"
