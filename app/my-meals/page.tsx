@@ -120,6 +120,7 @@ export default function MyMealsPage() {
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction
                           onClick={() => handleDeleteMeal(meal.id)}
+                          className="bg-red-500 hover:bg-red-600"
                         >
                           Delete
                         </AlertDialogAction>
