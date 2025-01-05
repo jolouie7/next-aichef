@@ -1,9 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import debounce from "lodash/debounce";
 import { Loader2, Trash2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -58,9 +59,6 @@ export default function UpdateMealForm({
   userId,
   initialData,
 }: UpdateMealFormProps) {
-  const [name, setName] = useState(initialData.name);
-  const [description, setDescription] = useState(initialData.description);
-  const [mealPicture, setMealPicture] = useState(initialData.mealPicture);
   const [ingredients, setIngredients] = useState(initialData.ingredients);
   const [instructions, setInstructions] = useState(initialData.instructions);
   const [isLoading, setIsLoading] = useState(false);
@@ -78,20 +76,36 @@ export default function UpdateMealForm({
     },
   });
 
-  const onIngredientsChange = (ingredients: { id: string; name: string }[]) => {
-    setIngredients(ingredients);
-    form.setValue("ingredients", ingredients);
+  const debouncedIngredientChange = debounce((newIngredients) => {
+    setIngredients(newIngredients);
+    form.setValue("ingredients", newIngredients);
+  }, 300);
+
+  const debouncedInstructionChange = debounce((newInstructions) => {
+    setInstructions(newInstructions);
+    form.setValue("instructions", newInstructions);
+  }, 300);
+
+  const handleIngredientChange = (index: number, value: string) => {
+    const newIngredients = ingredients.map((ingredient, i) =>
+      i === index ? { ...ingredient, name: value } : ingredient,
+    );
+    debouncedIngredientChange(newIngredients);
   };
 
-  const onInstructionsChange = (
-    instructions: {
-      id: string;
-      description: string;
-    }[],
-  ) => {
-    setInstructions(instructions);
-    form.setValue("instructions", instructions);
+  const handleInstructionChange = (index: number, value: string) => {
+    const newInstructions = instructions.map((instruction, i) =>
+      i === index ? { ...instruction, description: value } : instruction,
+    );
+    debouncedInstructionChange(newInstructions);
   };
+
+  useEffect(() => {
+    return () => {
+      debouncedIngredientChange.cancel();
+      debouncedInstructionChange.cancel();
+    };
+  }, []);
 
   const handleDeleteIngredient = async (id: string) => {
     try {
@@ -151,17 +165,15 @@ export default function UpdateMealForm({
     form.setValue("instructions", updatedInstructions);
   };
 
-  const onSubmit = async () => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
 
     try {
       const response = await updateMeal(mealId, {
-        name,
-        description,
-        mealPicture,
+        ...values,
         userId,
-        ingredients,
-        instructions,
+        ingredients: ingredients,
+        instructions: instructions,
       });
 
       if (!response.success) {
@@ -202,11 +214,7 @@ export default function UpdateMealForm({
             <FormItem className="flex flex-col">
               <FormLabel>Name:</FormLabel>
               <FormControl>
-                <Input
-                  {...field}
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
+                <Input {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -219,11 +227,7 @@ export default function UpdateMealForm({
             <FormItem className="flex flex-col">
               <FormLabel>Description:</FormLabel>
               <FormControl>
-                <Input
-                  {...field}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                />
+                <Input {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -236,11 +240,7 @@ export default function UpdateMealForm({
             <FormItem className="flex flex-col">
               <FormLabel>Meal Picture URL:</FormLabel>
               <FormControl>
-                <Input
-                  {...field}
-                  value={mealPicture}
-                  onChange={(e) => setMealPicture(e.target.value)}
-                />
+                <Input {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -254,72 +254,62 @@ export default function UpdateMealForm({
               <FormLabel>Ingredients:</FormLabel>
               <FormControl>
                 <div className="space-y-4">
-                  {field.value.map(
-                    (
-                      ingredient: { id: string; name: string },
-                      index: number,
-                    ) => (
-                      <div
-                        key={ingredient.id}
-                        className="flex items-center gap-2"
-                      >
-                        <Input
-                          value={ingredient.name}
-                          onChange={(e) => {
-                            const newIngredients = [...field.value];
-                            newIngredients[index] = {
-                              id: newIngredients[index].id,
-                              name: e.target.value,
-                            };
-                            onIngredientsChange(newIngredients);
-                          }}
-                          placeholder={`Ingredient ${index + 1}`}
-                        />
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              className="hover:text-destructive"
-                              size="icon"
+                  {ingredients.map((ingredient, index) => (
+                    <div
+                      key={ingredient.id}
+                      className="flex items-center gap-2"
+                    >
+                      <Input
+                        defaultValue={ingredient.name}
+                        onChange={(e) =>
+                          handleIngredientChange(index, e.target.value)
+                        }
+                        placeholder={`Ingredient ${index + 1}`}
+                      />
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="hover:text-destructive"
+                            size="icon"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Are you absolutely sure you want to delete this
+                              ingredient?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action cannot be undone. This will
+                              permanently delete your ingredient.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() =>
+                                handleDeleteIngredient(ingredient.id)
+                              }
+                              className="bg-red-500 hover:bg-red-600"
                             >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>
-                                Are you absolutely sure you want to delete this
-                                ingredient?
-                              </AlertDialogTitle>
-                              <AlertDialogDescription>
-                                This action cannot be undone. This will
-                                permanently delete your ingredient.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={() =>
-                                  handleDeleteIngredient(ingredient.id)
-                                }
-                                className="bg-red-500 hover:bg-red-600"
-                              >
-                                Continue
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </div>
-                    ),
-                  )}
+                              Continue
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  ))}
                 </div>
               </FormControl>
               <Button
                 type="button"
-                variant="default"
+                variant="outline"
                 onClick={handleAddIngredient}
-                className="mt-2 bg-green-500 hover:bg-green-600"
+                className="mt-2"
               >
                 Add Ingredient
               </Button>
@@ -335,72 +325,62 @@ export default function UpdateMealForm({
               <FormLabel>Instructions:</FormLabel>
               <FormControl>
                 <div className="space-y-4">
-                  {field.value.map(
-                    (
-                      instruction: { id: string; description: string },
-                      index: number,
-                    ) => (
-                      <div
-                        key={instruction.id}
-                        className="flex items-center gap-2"
-                      >
-                        <Input
-                          value={instruction.description}
-                          onChange={(e) => {
-                            const newInstructions = [...field.value];
-                            newInstructions[index] = {
-                              id: instruction.id,
-                              description: e.target.value,
-                            };
-                            onInstructionsChange(newInstructions);
-                          }}
-                          placeholder={`Instruction ${index + 1}`}
-                        />
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              className="hover:text-destructive"
-                              size="icon"
+                  {instructions.map((instruction, index) => (
+                    <div
+                      key={instruction.id}
+                      className="flex items-center gap-2"
+                    >
+                      <Input
+                        defaultValue={instruction.description}
+                        onChange={(e) =>
+                          handleInstructionChange(index, e.target.value)
+                        }
+                        placeholder={`Instruction ${index + 1}`}
+                      />
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="hover:text-destructive"
+                            size="icon"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Are you absolutely sure you want to delete this
+                              instruction?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action cannot be undone. This will
+                              permanently delete your instruction.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() =>
+                                handleDeleteInstruction(instruction.id)
+                              }
+                              className="bg-red-500 hover:bg-red-600"
                             >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>
-                                Are you absolutely sure you want to delete this
-                                instruction?
-                              </AlertDialogTitle>
-                              <AlertDialogDescription>
-                                This action cannot be undone. This will
-                                permanently delete your instruction.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={() =>
-                                  handleDeleteInstruction(instruction.id)
-                                }
-                                className="bg-red-500 hover:bg-red-600"
-                              >
-                                Continue
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </div>
-                    ),
-                  )}
+                              Continue
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  ))}
                 </div>
               </FormControl>
               <Button
                 type="button"
-                variant="default"
+                variant="outline"
                 onClick={handleAddInstruction}
-                className="mt-2 bg-green-500 hover:bg-green-600"
+                className="mt-2"
               >
                 Add Instruction
               </Button>
