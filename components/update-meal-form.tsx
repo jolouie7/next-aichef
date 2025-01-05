@@ -323,6 +323,7 @@ export default function UpdateMealForm({
                                 onClick={() =>
                                   handleDeleteIngredient(ingredient.id)
                                 }
+                                className="bg-red-500 hover:bg-red-600"
                               >
                                 Continue
                               </AlertDialogAction>
@@ -403,6 +404,7 @@ export default function UpdateMealForm({
                                 onClick={() =>
                                   handleDeleteInstruction(instruction.id)
                                 }
+                                className="bg-red-500 hover:bg-red-600"
                               >
                                 Continue
                               </AlertDialogAction>
