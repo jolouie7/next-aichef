@@ -78,7 +78,10 @@ export function MainNav() {
                 </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem asChild>
+                <DropdownMenuItem>
+                  <span>{session.user?.email}</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
                   <Link href="/my-meals">My Meals</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
