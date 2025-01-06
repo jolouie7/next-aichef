@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -34,7 +34,8 @@ const formSchema = z.object({
 
 export default function SigninForm() {
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/create-meal";
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -47,26 +48,20 @@ export default function SigninForm() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setIsLoading(true);
+
       const response = await signIn("credentials", {
         email: values.email,
         password: values.password,
-        redirect: false,
-        callbackUrl: "/create-meal",
+        redirect: true,
+        callbackUrl: callbackUrl,
       });
 
-      if (!response) {
-        throw new Error("No response from auth server");
-      }
-
-      if (response.error) {
+      if (response?.error) {
         form.setError("password", {
           message: response.error,
         });
         return;
       }
-
-      router.push("/create-meal");
-      router.refresh();
     } catch (error) {
       console.error("Sign in error:", error);
       form.setError("password", {
@@ -85,7 +80,7 @@ export default function SigninForm() {
             Welcome back
           </h1>
           <p className="text-lg text-muted-foreground">
-            Sign in with your Google account
+            Sign in to your account
           </p>
         </CardHeader>
         <CardContent className="space-y-4">
