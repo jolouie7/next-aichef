@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -43,7 +42,6 @@ const formSchema = z
 
 export default function SignupForm() {
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -69,18 +67,15 @@ export default function SignupForm() {
       const result = await signIn("credentials", {
         email: values.email,
         password: values.password,
-        redirect: false,
+        redirect: true,
+        callbackUrl: "/create-meal",
       });
 
       if (result?.error) {
         form.setError("email", {
           message: result.error,
         });
-        return;
       }
-
-      router.push("/create-meal");
-      router.refresh();
     } catch (error) {
       console.error("Signup error:", error);
       form.setError("email", {
