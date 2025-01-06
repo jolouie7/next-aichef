@@ -13,7 +13,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.push(`/signin?callbackUrl=${pathname}`);
+      router.replace(`/signin?callbackUrl=${pathname}`);
     }
   }, [status, router, pathname]);
 

@@ -51,6 +51,7 @@ export default function SigninForm() {
         email: values.email,
         password: values.password,
         redirect: false,
+        callbackUrl: "/create-meal",
       });
 
       if (!response) {
