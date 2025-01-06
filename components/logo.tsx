@@ -4,8 +4,8 @@ export default function Logo({
   height = 100,
   width = 100,
 }: {
-  height: number;
-  width: number;
+  height?: number;
+  width?: number;
 }) {
   return (
     <div className="flex flex-col items-center justify-center">
