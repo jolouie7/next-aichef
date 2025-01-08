@@ -1,6 +1,13 @@
 # Ai Chef
 
-A simple AI-powered meal generator.
+AI-powered meal generator.
+
+> Test login credentials:
+>
+> ```bash
+> username: test@gmail.com
+> password: test1234
+> ```
 
 ## Tech Stack
 
@@ -11,7 +18,37 @@ A simple AI-powered meal generator.
 - NextAuth
 - Shadcn UI
 - Vercel
+- PostgreSQL (via NeonDB)
 
-Login credentials:
-username: test@gmail.com
-password: test1234
+## Installation
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/your-username/ai-chef.git
+cd next-aichef
+npm install
+```
+
+2. Create a `.env` file with the following variables:
+
+```bash
+DATABASE_URL="your_database_url"
+NEXTAUTH_URL="your_nextauth_url" (If not deployed on Vercel)
+NEXTAUTH_SECRET="your_nextauth_secret"
+OPENAI_API_KEY="your_openai_api_key"
+```
+
+3. Run the development server:
+
+```bash
+npm run dev
+```
+
+4. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## Future improvements
+
+- Google OAuth
+- Email verification
+- Password reset
