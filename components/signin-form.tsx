@@ -49,23 +49,37 @@ export default function SigninForm() {
     try {
       setIsLoading(true);
 
+      // First signIn call to validate credentials without redirect
       const response = await signIn("credentials", {
         email: values.email,
         password: values.password,
-        redirect: true,
+        redirect: false,
         callbackUrl: callbackUrl,
       });
 
       if (response?.error) {
+        form.setError("email", {
+          message: "Invalid email or password",
+        });
         form.setError("password", {
-          message: response.error,
+          message: "Invalid email or password",
         });
         return;
       }
+
+      // Second signIn call to handle successful redirect
+      if (response?.ok) {
+        await signIn("credentials", {
+          email: values.email,
+          password: values.password,
+          redirect: true,
+          callbackUrl: callbackUrl,
+        });
+      }
     } catch (error) {
       console.error("Sign in error:", error);
-      form.setError("password", {
-        message: "Invalid email or password",
+      form.setError("email", {
+        message: "Something went wrong. Please try again.",
       });
     } finally {
       setIsLoading(false);

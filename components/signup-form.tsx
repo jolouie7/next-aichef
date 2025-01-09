@@ -64,16 +64,21 @@ export default function SignupForm() {
         return;
       }
 
-      const result = await signIn("credentials", {
+      // First signIn call to validate credentials without redirect
+      const signInResponse = await signIn("credentials", {
         email: values.email,
         password: values.password,
-        redirect: true,
+        redirect: false,
         callbackUrl: "/create-meal",
       });
 
-      if (result?.error) {
-        form.setError("email", {
-          message: result.error,
+      // Second signIn call to handle successful redirect
+      if (signInResponse?.ok) {
+        await signIn("credentials", {
+          email: values.email,
+          password: values.password,
+          redirect: true,
+          callbackUrl: "/create-meal",
         });
       }
     } catch (error) {
