@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { toast } from "@/hooks/use-toast";
 import { signup } from "@/server/actions/auth";
 
 const formSchema = z
@@ -83,8 +84,10 @@ export default function SignupForm() {
       }
     } catch (error) {
       console.error("Signup error:", error);
-      form.setError("email", {
-        message: "Something went wrong. Please try again.",
+      toast({
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
