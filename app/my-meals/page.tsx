@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 import { Pencil, Trash2 } from "lucide-react";
 
-import { deleteMeal, getAllMeals } from "../actions/meal";
+import { deleteMeal, getAllMeals } from "../../server/actions/meal";
 
 import { ProtectedRoute } from "@/components/auth/protected-route";
 import Meal from "@/components/meal";

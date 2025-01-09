@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 
-import { getMealById } from "@/app/actions/meal";
 import UpdateMealForm from "@/components/update-meal-form";
 import { getCurrentUser } from "@/lib/auth";
+import { getMealById } from "@/server/actions/meal";
 
 export default async function UpdateMealPage({
   params,

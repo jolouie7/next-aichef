@@ -5,7 +5,7 @@ import { useState } from "react";
 
 import { useSession } from "next-auth/react";
 
-import { createMeal } from "../actions/meal";
+import { createMeal } from "../../server/actions/meal";
 
 import { ProtectedRoute } from "@/components/auth/protected-route";
 import MealCreationLoader from "@/components/meal-creation-loader";
