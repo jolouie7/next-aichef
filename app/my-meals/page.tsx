@@ -33,7 +33,6 @@ import {
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 
-//TODO: break off the meal card into its own component
 //TODO: add pagination
 
 interface MealData {
