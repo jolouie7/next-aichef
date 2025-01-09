@@ -91,6 +91,27 @@ export async function getMealById(id: string) {
   }
 }
 
+export async function getCurrentUserMeals(userId: string) {
+  try {
+    const meals = await prisma.meal.findMany({
+      where: { userId },
+      include: {
+        ingredients: {
+          include: {
+            ingredient: true,
+          },
+        },
+        instructions: true,
+      },
+    });
+    revalidatePath("/my-meals");
+    return { success: true, meals };
+  } catch (error) {
+    console.error("Error fetching meals:", error);
+    return { success: false, meals: [] };
+  }
+}
+
 export async function updateMeal(id: string, meal: MealData) {
   try {
     await prisma.mealIngredient.deleteMany({

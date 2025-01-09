@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { Pencil, Trash2 } from "lucide-react";
+import { useSession } from "next-auth/react";
 
-import { deleteMeal, getAllMeals } from "../../server/actions/meal";
+import { deleteMeal, getCurrentUserMeals } from "../../server/actions/meal";
 
 import { ProtectedRoute } from "@/components/auth/protected-route";
 import Meal from "@/components/meal";
@@ -48,10 +49,12 @@ export default function MyMealsPage() {
   const [meals, setMeals] = useState<MealData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
 
   useEffect(() => {
     const fetchMeals = async () => {
-      const meals = await getAllMeals();
+      const meals = await getCurrentUserMeals(userId as string);
       if (meals.success) {
         setMeals(meals.meals);
       }
