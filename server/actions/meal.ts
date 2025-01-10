@@ -4,16 +4,24 @@ import { revalidatePath } from "next/cache";
 
 import { prisma } from "@/lib/prisma";
 
-interface MealData {
+interface BaseMealData {
   name: string;
   description: string;
   mealPicture: string;
   userId: string;
+}
+
+interface CreateMealData extends BaseMealData {
+  ingredients: string[];
+  instructions: string[];
+}
+
+interface UpdateMealData extends BaseMealData {
   ingredients: { id: string; name: string }[];
   instructions: { id: string; description: string }[];
 }
 
-export async function createMeal(meal: MealData) {
+export async function createMeal(meal: CreateMealData) {
   try {
     const newMeal = await prisma.meal.create({
       data: {
@@ -22,22 +30,32 @@ export async function createMeal(meal: MealData) {
         mealPicture: meal.mealPicture,
         userId: meal.userId,
         ingredients: {
-          create: meal.ingredients.map((ingredient) => ({
+          create: meal.ingredients.map((ingredientName) => ({
             ingredient: {
-              create: {
-                name: ingredient.name,
+              connectOrCreate: {
+                where: { name: ingredientName },
+                create: { name: ingredientName },
               },
             },
           })),
         },
         instructions: {
-          create: meal.instructions.map((instruction) => ({
+          create: meal.instructions.map((instructionText) => ({
             totalSteps: meal.instructions.length,
-            description: instruction.description,
+            description: instructionText,
           })),
         },
       },
+      include: {
+        ingredients: {
+          include: {
+            ingredient: true,
+          },
+        },
+        instructions: true,
+      },
     });
+
     return { success: true, meal: newMeal };
   } catch (error) {
     console.error("Error creating meal:", error);
@@ -93,8 +111,18 @@ export async function getMealById(id: string) {
 
 export async function getCurrentUserMeals(userId: string) {
   try {
+    if (!userId) {
+      console.error("No user ID provided");
+      return { success: false, meals: [], error: "No user ID provided" };
+    }
+
     const meals = await prisma.meal.findMany({
-      where: { userId },
+      where: {
+        userId: userId,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
       include: {
         ingredients: {
           include: {
@@ -104,15 +132,21 @@ export async function getCurrentUserMeals(userId: string) {
         instructions: true,
       },
     });
+
+    if (!meals) {
+      console.error("No meals found for user");
+      return { success: false, meals: [], error: "No meals found" };
+    }
+
     revalidatePath("/my-meals");
     return { success: true, meals };
   } catch (error) {
     console.error("Error fetching meals:", error);
-    return { success: false, meals: [] };
+    return { success: false, meals: [], error: "Failed to fetch meals" };
   }
 }
 
-export async function updateMeal(id: string, meal: MealData) {
+export async function updateMeal(id: string, meal: UpdateMealData) {
   try {
     await prisma.mealIngredient.deleteMany({
       where: { mealId: id },

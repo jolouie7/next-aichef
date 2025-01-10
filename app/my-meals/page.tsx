@@ -50,16 +50,20 @@ export default function MyMealsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const { data: session } = useSession();
-  const userId = session?.user?.id;
 
   useEffect(() => {
     const fetchMeals = async () => {
-      const meals = await getCurrentUserMeals(userId as string);
+      if (!session?.user?.id) {
+        return;
+      }
+
+      const meals = await getCurrentUserMeals(session.user.id);
       if (meals.success) {
         setMeals(meals.meals);
       }
       setIsLoading(false);
     };
+
     fetchMeals();
   }, []);
 

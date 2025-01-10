@@ -49,23 +49,27 @@ export default function MealResultsPage() {
       const data = await res.json();
 
       setMeal(data);
-      await createMeal({
+
+      const createMealResponse = await createMeal({
         name: data.title,
         description: data.description,
         mealPicture: data.mealPicture,
-        userId: userId.replace(/"/g, ""), // remove quotes from userId
+        userId: userId.replace(/"/g, ""),
         ingredients: data.ingredients,
         instructions: data.instructions,
       });
 
-      router.push("/meal-detail");
+      if (createMealResponse.success) {
+        router.push("/meal-detail");
+      }
     } catch (error) {
       console.error("Error creating meal:", error);
       toast({
         title: "Error",
-        description: "Failed to save meal",
+        description: "Failed to create meal",
         variant: "destructive",
       });
+    } finally {
       setLoading(false);
     }
   };
