@@ -73,7 +73,7 @@ export function MainNav() {
               ))}
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => signOut()}>
-                Logout
+                Sign Out
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
