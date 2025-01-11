@@ -107,7 +107,11 @@ export default function SignupForm() {
         </CardHeader>
         <CardContent className="space-y-4">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-4"
+              data-testid="signup-form"
+            >
               <FormField
                 control={form.control}
                 name="email"
@@ -174,6 +178,7 @@ export default function SignupForm() {
                 type="submit"
                 disabled={isLoading}
                 className="w-full rounded-md bg-green-600 p-6 hover:bg-green-700"
+                data-testid="signup-button"
               >
                 {isLoading ? (
                   <>
