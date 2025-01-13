@@ -102,7 +102,11 @@ export default function SigninForm() {
         </CardHeader>
         <CardContent className="space-y-4">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-4"
+              data-testid="signin-form"
+            >
               <FormField
                 control={form.control}
                 name="email"
@@ -155,6 +159,7 @@ export default function SigninForm() {
                 type="submit"
                 disabled={isLoading}
                 className="w-full rounded-md bg-green-600 p-6 hover:bg-green-700"
+                data-testid="signin-button"
               >
                 {isLoading ? (
                   <>
