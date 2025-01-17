@@ -163,6 +163,7 @@ export default function CreateMealForm() {
                   <TableCell className="font-medium">{ingredient}</TableCell>
                   <TableCell className="flex justify-end">
                     <Trash2
+                      data-testid="trash-icon"
                       className="text-red-500 cursor-pointer"
                       onClick={() => {
                         onDeleteIngredient(ingredient);

@@ -179,8 +179,101 @@ describe("CreateMealForm", () => {
     });
   });
 
-  it("add ingredient using keyboard enter key instead of add button", () => {});
-  it("add ingredient using add button", () => {});
-  it("delete ingredient", () => {});
-  it("clear ingredients", () => {});
+  it("add ingredient using keyboard enter key instead of add button", async () => {
+    const user = userEvent.setup();
+    render(
+      <MealsProvider>
+        <CreateMealForm />
+      </MealsProvider>,
+    );
+    const mealTimeButton = screen.getByText("Select Meal Time");
+    const ingredientInput = screen.getByPlaceholderText("Add Ingredient");
+    const submitButton = screen.getByText("Submit");
+
+    // Select meal time
+    await user.click(mealTimeButton);
+    await waitFor(() => {
+      expect(screen.getByText("Breakfast")).toBeInTheDocument();
+    });
+    await user.click(screen.getByText("Breakfast"));
+
+    // Add ingredients
+    await user.type(ingredientInput, "Chicken");
+    await user.keyboard("{Enter}");
+    await user.type(ingredientInput, "Pasta");
+    await user.keyboard("{Enter}");
+    await user.type(ingredientInput, "Tomato");
+    await user.keyboard("{Enter}");
+
+    await user.click(submitButton);
+
+    // Verify ingredients were added correctly
+    const ingredientsTable = screen.getByRole("table");
+    expect(ingredientsTable).toBeInTheDocument();
+    expect(screen.getByText("Chicken")).toBeInTheDocument();
+    expect(screen.getByText("Pasta")).toBeInTheDocument();
+    expect(screen.getByText("Tomato")).toBeInTheDocument();
+
+    // Verify form submission and navigation
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+      expect(mockRouter.push).toHaveBeenCalledWith("/meal-results");
+    });
+  });
+
+  it("delete ingredient", async () => {
+    const user = userEvent.setup();
+    render(
+      <MealsProvider>
+        <CreateMealForm />
+      </MealsProvider>,
+    );
+
+    // Add ingredients
+    const ingredientInput = screen.getByPlaceholderText("Add Ingredient");
+    const ingredientsTable = screen.getByRole("table");
+
+    await user.type(ingredientInput, "Chicken");
+    await user.keyboard("{Enter}");
+
+    // Delete ingredient
+    expect(ingredientsTable).toBeInTheDocument();
+    expect(screen.getByText("Chicken")).toBeInTheDocument();
+    await user.click(screen.getByTestId("trash-icon"));
+    expect(screen.queryByText("Chicken")).not.toBeInTheDocument();
+  });
+
+  it("clear ingredients", async () => {
+    const user = userEvent.setup();
+    render(
+      <MealsProvider>
+        <CreateMealForm />
+      </MealsProvider>,
+    );
+    const ingredientInput = screen.getByPlaceholderText("Add Ingredient");
+    const clearButton = screen.getByText("Clear");
+    const ingredientsTable = screen.getByRole("table");
+
+    // Add ingredients
+    await user.type(ingredientInput, "Chicken");
+    await user.keyboard("{Enter}");
+    await user.type(ingredientInput, "Pasta");
+    await user.keyboard("{Enter}");
+    await user.type(ingredientInput, "Tomato");
+    await user.keyboard("{Enter}");
+
+    // Verify ingredients were added correctly
+    expect(ingredientsTable).toBeInTheDocument();
+    expect(screen.getByText("Chicken")).toBeInTheDocument();
+    expect(screen.getByText("Pasta")).toBeInTheDocument();
+    expect(screen.getByText("Tomato")).toBeInTheDocument();
+
+    await user.click(clearButton);
+
+    // Verify ingredients were cleared correctly
+    expect(ingredientsTable).toBeInTheDocument();
+    expect(screen.queryByText("Chicken")).not.toBeInTheDocument();
+    expect(screen.queryByText("Pasta")).not.toBeInTheDocument();
+    expect(screen.queryByText("Tomato")).not.toBeInTheDocument();
+  });
 });
