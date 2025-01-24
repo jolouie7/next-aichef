@@ -19,6 +19,9 @@ AI-powered meal generator.
 - Shadcn UI
 - Vercel
 - PostgreSQL (via NeonDB)
+- Jest
+- React Testing Library
+- Playwright
 
 ## Installation
 
