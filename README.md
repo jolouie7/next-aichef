@@ -9,6 +9,8 @@ AI-powered meal generator.
 > password: test1234
 > ```
 
+<div style="position: relative; padding-bottom: 56.25%; height: 0;"><iframe src="https://www.loom.com/embed/b49ac0ec07ba4f64a130f1501811931b?sid=ec5fbfd5-9d44-4153-aa92-b92981644a8a" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen target="_blank" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
+
 ## Tech Stack
 
 - Next.js (React)
