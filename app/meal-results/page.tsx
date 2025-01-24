@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 
 import { useSession } from "next-auth/react";
 
@@ -20,17 +19,16 @@ interface MealResult {
 }
 
 export default function MealResultsPage() {
-  const [loading, setLoading] = useState(false);
-
   const { meals } = useMealsContext();
   const router = useRouter();
-  const { setMeal } = useMealDetailContext();
+  const { setMeal, setIsLoading, isLoading } = useMealDetailContext();
   const { data: session } = useSession();
   const userId = session?.user?.id;
 
   const handleClick = async ({ title, description }: MealResult) => {
     try {
-      setLoading(true);
+      setIsLoading(true);
+
       if (!userId) {
         toast({
           title: "Error",
@@ -40,6 +38,8 @@ export default function MealResultsPage() {
         return;
       }
 
+      router.push("/meal-detail");
+
       const res = await fetch("/api/meal-detail", {
         method: "POST",
         body: JSON.stringify({
@@ -48,19 +48,17 @@ export default function MealResultsPage() {
       });
       const data = await res.json();
 
-      setMeal(data);
-
       const createMealResponse = await createMeal({
         name: data.title,
         description: data.description,
         mealPicture: data.mealPicture,
-        userId: userId.replace(/"/g, ""),
+        userId: userId.replace(/"/g, ""), // Do this to remove extra quotes
         ingredients: data.ingredients,
         instructions: data.instructions,
       });
 
       if (createMealResponse.success) {
-        router.push("/meal-detail");
+        setMeal(data);
       }
     } catch (error) {
       console.error("Error creating meal:", error);
@@ -69,12 +67,13 @@ export default function MealResultsPage() {
         description: "Failed to create meal",
         variant: "destructive",
       });
+      router.push("/meal-results");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="container mx-auto mt-8 p-4">
         <MealCreationLoader />
