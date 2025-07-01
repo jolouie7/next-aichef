@@ -2,7 +2,12 @@ import { type NextRequest, NextResponse } from "next/server";
 
 import { getToken } from "next-auth/jwt";
 
-const protectedRoutes = ["/create-meal", "/meal-detail", "/meal-results"];
+const protectedRoutes = [
+  "/create-meal",
+  "/meal-detail",
+  "/meal-results",
+  "/my-meals",
+];
 
 export async function middleware(request: NextRequest) {
   const token = await getToken({ req: request });
