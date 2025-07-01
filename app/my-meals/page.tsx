@@ -47,16 +47,18 @@ interface MealData {
 
 export default function MyMealsPage() {
   const [meals, setMeals] = useState<MealData[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const { data: session } = useSession();
 
   useEffect(() => {
     const fetchMeals = async () => {
       if (!session?.user?.id) {
+        setIsLoading(false);
         return;
       }
 
+      setIsLoading(true);
       const meals = await getCurrentUserMeals(session.user.id);
       if (meals.success) {
         setMeals(meals.meals);
@@ -65,7 +67,7 @@ export default function MyMealsPage() {
     };
 
     fetchMeals();
-  }, []);
+  }, [session?.user?.id]);
 
   const handleDeleteMeal = async (mealId: string) => {
     const response = await deleteMeal(mealId);
