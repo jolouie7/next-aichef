@@ -85,4 +85,24 @@ describe("SignInForm", () => {
       expect(screen.getAllByText("Invalid email or password")).toHaveLength(2);
     });
   });
+
+  it("allows users to sign in with google oauth", async () => {
+    const user = userEvent.setup();
+    render(<SigninForm />);
+
+    // Mock successful Google OAuth sign-in
+    (signIn as jest.Mock).mockResolvedValueOnce({ ok: true });
+
+    const googleButton = screen.getByRole("button", {
+      name: /sign in with google/i,
+    });
+
+    await user.click(googleButton);
+
+    await waitFor(() => {
+      expect(signIn).toHaveBeenCalledWith("google");
+    });
+
+    expect(signIn).toHaveBeenCalledTimes(1);
+  });
 });
