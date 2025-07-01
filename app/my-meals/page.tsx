@@ -47,7 +47,7 @@ interface MealData {
 
 export default function MyMealsPage() {
   const [meals, setMeals] = useState<MealData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { data: session } = useSession();
 

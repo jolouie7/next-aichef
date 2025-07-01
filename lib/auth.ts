@@ -55,27 +55,34 @@ export const authOptions: AuthOptions = {
     }),
   ],
   callbacks: {
-    async signIn({ user, account, profile }) {
-      return true;
-    },
-    async redirect({ url, baseUrl }) {
-      // Allows relative callback URLs
-      if (url.startsWith("/")) return `${baseUrl}${url}`;
-      // Allows callback URLs on the same origin
-      else if (new URL(url).origin === baseUrl) return url;
-      return `${baseUrl}/my-meals`;
-    },
     async jwt({ token, user }) {
       if (user) {
         token.sub = user.id;
+        token.email = user.email;
+        token.name = user.name;
+        token.picture = user.image;
       }
       return token;
     },
     async session({ session, token }) {
-      if (session?.user) {
+      if (token) {
         session.user.id = token.sub as string;
+        session.user.email = token.email as string;
+        session.user.name = token.name as string;
+        session.user.image = token.picture as string;
       }
       return session;
+    },
+    async redirect({ url, baseUrl }) {
+      // Always redirect to /my-meals after successful signin with google OAuth
+      if (url.includes("/api/auth/callback/google") || url.includes("signin")) {
+        return `${baseUrl}/my-meals`;
+      }
+
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      if (new URL(url).origin === baseUrl) return url;
+
+      return `${baseUrl}/my-meals`;
     },
   },
 };
