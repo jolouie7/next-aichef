@@ -197,9 +197,36 @@ export async function updateMeal(id: string, meal: UpdateMealData) {
 
 export async function deleteMeal(id: string) {
   try {
-    const deletedMeal = await prisma.meal.delete({
-      where: { id },
+    const deletedMeal = await prisma.$transaction(async (tx) => {
+      const mealIngredients = await tx.mealIngredient.findMany({
+        // Get all ingredient IDs used by this meal
+        where: { mealId: id },
+        select: { ingredientId: true },
+      });
+      const ingredientIds = mealIngredients.map(
+        (mealIngredient) => mealIngredient.ingredientId,
+      );
+
+      // Delete the meal
+      const meal = await tx.meal.delete({
+        where: { id },
+      });
+
+      // Check for orphaned ingredients and delete them
+      for (const ingredientId of ingredientIds) {
+        const count = await tx.mealIngredient.count({
+          where: { ingredientId },
+        });
+
+        if (count === 0) {
+          await tx.ingredient.delete({
+            where: { id: ingredientId },
+          });
+        }
+      }
+      return meal;
     });
+
     return { success: true, deletedMeal };
   } catch (error) {
     console.error("Error deleting meal:", error);

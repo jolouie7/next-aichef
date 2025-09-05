@@ -81,7 +81,7 @@ model Ingredient {
 model MealIngredient {
   id           String     @id @default(cuid())
   mealId       String
-  meal         Meal       @relation(fields: [mealId], references: [id])
+  meal         Meal       @relation(fields: [mealId], references: [id], onDelete: Cascade)
   ingredientId String
   ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
   amount       Float?
@@ -92,7 +92,7 @@ model MealIngredient {
 model Instruction {
   id          String   @id @default(cuid())
   mealId      String
-  meal        Meal     @relation(fields: [mealId], references: [id])
+  meal        Meal     @relation(fields: [mealId], references: [id], onDelete: Cascade)
   totalSteps  Int
   description String
   createdAt   DateTime @default(now())
