@@ -103,6 +103,6 @@ test("should be able to create a new meal", async ({ page }) => {
   const mealTitle = page.getByText("Egg and Ham Rice Casserole").first();
   await mealTitle.click();
 
-  await page.waitForURL("**/meal-results");
+  await page.waitForURL("**/meal-detail");
   await expect(page.getByText("Egg and Ham Rice Casserole")).toBeVisible();
 });
