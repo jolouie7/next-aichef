@@ -63,6 +63,7 @@ export default function MealPage() {
         userId &&
         !mealSaved
       ) {
+        setMealSaved(true);
         try {
           await createMeal({
             name: meal.title,
@@ -72,8 +73,8 @@ export default function MealPage() {
             ingredients: meal.ingredients,
             instructions: meal.instructions,
           });
-          setMealSaved(true);
         } catch (error) {
+          setMealSaved(false);
           console.error("Error saving meal:", error);
           toast({
             title: "Error",
@@ -84,7 +85,7 @@ export default function MealPage() {
       }
     };
     saveMeal();
-  }, [meal?.mealPicture, mealSaved, userId]);
+  }, [meal?.mealPicture]);
 
   if (isLoading || !meal) {
     return (
