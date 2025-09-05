@@ -6,6 +6,7 @@ import { Printer } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface MealResult {
   title: string;
@@ -40,13 +41,16 @@ export default function Meal({ meal }: MealResultProps) {
         </CardHeader>
         <CardContent>
           <div className="mb-6 overflow-hidden rounded-lg max-w-md mx-auto">
-            <Image
-              src={meal.mealPicture}
-              alt={meal.title}
-              width={400}
-              height={300}
-              className="w-full h-auto object-cover"
-            />
+            {meal.mealPicture && (
+              <Image
+                src={meal.mealPicture}
+                alt={meal.title}
+                width={256}
+                height={256}
+                className="w-full h-auto object-cover"
+              />
+            )}
+            {!meal.mealPicture && <Skeleton className="w-full aspect-square" />}
           </div>
           <div className="grid gap-6 lg:grid-cols-2">
             <div>

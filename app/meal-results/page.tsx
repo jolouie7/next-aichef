@@ -4,8 +4,6 @@ import { useRouter } from "next/navigation";
 
 import { useSession } from "next-auth/react";
 
-import { createMeal } from "../../server/actions/meal";
-
 import { ProtectedRoute } from "@/components/auth/protected-route";
 import MealCreationLoader from "@/components/meal-creation-loader";
 import MealOption from "@/components/meal-option";
@@ -40,26 +38,16 @@ export default function MealResultsPage() {
 
       router.push("/meal-detail");
 
-      const res = await fetch("/api/meal-detail", {
+      const mealDetailResponse = await fetch("/api/meal-detail", {
         method: "POST",
         body: JSON.stringify({
           prompt: `Generate a meal with title: ${title} and description: ${description}.`,
         }),
       });
-      const data = await res.json();
 
-      const createMealResponse = await createMeal({
-        name: data.title,
-        description: data.description,
-        mealPicture: data.mealPicture,
-        userId: userId.replace(/"/g, ""), // Do this to remove extra quotes
-        ingredients: data.ingredients,
-        instructions: data.instructions,
-      });
+      const mealDetailData = await mealDetailResponse.json();
 
-      if (createMealResponse.success) {
-        setMeal(data);
-      }
+      setMeal(mealDetailData);
     } catch (error) {
       console.error("Error creating meal:", error);
       toast({

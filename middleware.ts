@@ -5,6 +5,7 @@ import { getToken } from "next-auth/jwt";
 const protectedRoutes = [
   "/create-meal",
   "/meal-detail",
+  "/meal-image",
   "/meal-results",
   "/my-meals",
 ];
